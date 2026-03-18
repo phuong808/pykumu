@@ -251,12 +251,65 @@ def extract_results(search: ts.TetradSearch,
     >>> results = extract_results(search, output_dir="boss_results")
     >>> print(f"Saved {len(results['edges'])} edges to {output_dir}")
     """
-    # Get graph objects
-    graph = search.get_java()
-    graph_string = search.get_string()
-    graph_json = search.get_json()
-    graph_xml = search.get_xml()  # XML format for Tetrad GUI
-    adjacency_matrix = search.get_graph_to_matrix()
+    def _try_methods(obj, method_names, *args, **kwargs):
+        for method_name in method_names:
+            method = getattr(obj, method_name, None)
+            if callable(method):
+                try:
+                    return method(*args, **kwargs)
+                except TypeError:
+                    continue
+        return None
+
+    # Get graph objects (supporting multiple pytetrad API versions)
+    graph = _try_methods(search, ["get_java", "getJava"])
+    if graph is None and hasattr(search, "java"):
+        graph = search.java
+
+    if graph is None:
+        raise AttributeError(
+            "Unable to retrieve graph from TetradSearch. "
+            "Expected one of: get_java(), getJava(), or .java"
+        )
+
+    graph_string = _try_methods(search, ["get_string", "getString"])
+    if graph_string is None:
+        graph_string = str(graph)
+
+    graph_json = _try_methods(search, ["get_json", "getJson"])
+    graph_xml = _try_methods(search, ["get_xml", "getXml"])
+
+    adjacency_matrix = _try_methods(
+        search,
+        ["get_graph_to_matrix", "getGraphToMatrix"]
+    )
+    if adjacency_matrix is None:
+        raise AttributeError(
+            "Unable to retrieve adjacency matrix from TetradSearch. "
+            "Expected one of: get_graph_to_matrix() or getGraphToMatrix()"
+        )
+
+    # Fallback via Java GraphSaveLoadUtils for older/newer wrappers
+    if graph_json is None or graph_xml is None:
+        try:
+            import edu.cmu.tetrad.graph.GraphSaveLoadUtils as gp
+
+            if graph_json is None:
+                graph_json = str(gp.graphToJson(graph))
+
+            if graph_xml is None:
+                graph_xml = str(gp.graphToXml(graph))
+        except Exception:
+            pass
+
+    if graph_json is None:
+        raise AttributeError(
+            "Unable to export graph JSON. "
+            "No compatible method found (tried get_json/getJson and GraphSaveLoadUtils.graphToJson)."
+        )
+
+    if graph_xml is None:
+        graph_xml = ""
     
     # Extract edge list
     edges = []
