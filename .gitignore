@@ -15,6 +15,7 @@ causal_analysis_notebook/fges_domain_results/
 
 # Generated data files (recreated on notebook run)
 causal_analysis_notebook/binarized_variable_dt.csv
+causal_analysis_notebook/null_variable_processed_dt.csv
 
 
 # Crash logs
