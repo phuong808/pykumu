@@ -5,3 +5,21 @@ __pycache__
 /mygraph.txt
 .Rproj.user
 
+
+# Causal analysis result folders
+causal_analysis_notebook/boss_results/
+causal_analysis_notebook/fges_results/
+causal_analysis_notebook/boss_domain_results/
+causal_analysis_notebook/fges_domain_results/
+
+
+# Generated data files (recreated on notebook run)
+causal_analysis_notebook/binarized_variable_dt.csv
+
+
+# Crash logs
+causal_analysis_notebook/hs_err_pid*.log
+
+
+# Python cache
+causal_analysis_notebook/__pycache__/
