@@ -1,14 +1,10 @@
 # %% [markdown]
 # # Causal Discovery Analysis
 #
-# Causal search using BOSS/FGES algorithms via PyTetrad.
-#
 # **Reference:** Kumu R package, `issue_causal_analysis.Rmd`
 
 # %% [markdown]
 # ## Notebook Setup Instructions
-#
-# This guide is for code reviewers to run the notebook end-to-end without additional context.
 #
 # ### Environment Requirements
 #
@@ -102,11 +98,8 @@ N_BOOTSTRAP = 80 if ALGORITHM == "boss" else 50
 # Increase Java memory allocation for large bootstrap analyses
 import os
 os.environ['JAVA_TOOL_OPTIONS'] = '-Xmx8g -Xms4g'  # 8GB max heap, 4GB initial
-print("✓ Java memory configured: 8GB max, 4GB initial")
 
-# %%
 import sys
-import os
 
 # Ensure the local pytetrad (which has get_json) takes precedence over any
 # system-installed version. The repo root is one level above this notebook.
