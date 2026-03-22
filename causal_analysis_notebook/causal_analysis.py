@@ -111,7 +111,7 @@ import pandas as pd
 import numpy as np
 import json
 import time
-import pytetrad.tools.TetradSearch as ts
+import api.TetradSearch as ts
 
 print(f"pytetrad loaded from: {ts.__file__}")
 
