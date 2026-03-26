@@ -1,62 +1,77 @@
 # %% [markdown]
 # # Causal Discovery Analysis
-#
-# **Reference:** Kumu R package, `issue_causal_analysis.Rmd`
+# 
+# 
+# **Reference:** Kumu R package, `issue_causal_analysis.Rmd` 
 
 # %% [markdown]
 # ## Notebook Setup Instructions
-#
+# 
+# 1. A JDK installed for version 21+ is necessary. See our Wiki article, [Setting up Java for Tetrad](https://github.com/cmu-phil/tetrad/wiki/Setting-up-Java-for-Tetrad).
+# 
+# 1. type ``echo $JAVA_HOME``in a terminal to see if this is already set to your JDK. On Windows, it should already be set if you've installed Java. On Mac, it should be set to the latest JDK installed. If it's not set, you'll need to [set JAVA_HOME](https://www.baeldung.com/java-home-on-windows-7-8-10-mac-os-x-linux#:~:text=On%20the%20Desktop%2C%20right%2Dclick,Variable%20value%20and%20click%20OK.) to the path of the Java installation you want to use for py-tetrad.
+# 
+# 1. Confirm you have a Python version of agt least 3.5. Here is how to [update Python](https://www.pythoncentral.io/how-to-update-python/) if you need to.
+# 
+# 1. Install JPype via pip:
+# 
+#    ```
+#    pip install JPype1
+#    ```
+# 
+# 1. Install py-tetrad via pip:
+# 
+#    ```
+#    pip install git+https://github.com/cmu-phil/py-tetrad
+#    ```
+# 
+# 
 # ### Environment Requirements
-#
+# 
 # - **OS:** macOS/Linux/Windows (tested in this repo on macOS).
 # - **Python:** 3.10+ recommended (repo requirement is `>=3.7`; avoid very old Python).
 # - **Java:** JDK 11+ required (JDK 17 works well). The notebook allocates up to 8 GB of Java heap — ensure your machine has at least 10 GB of available RAM.
 # - **Jupyter:** VS Code Notebook or JupyterLab.
-#
+# 
 # ### Required Python Packages
-#
+# 
 # Install from the repository root (`pykumu/`) in a clean virtual environment:
-#
+# 
 # ```bash
 # python3 -m venv .venv
-# source .venv/bin/activate  # Windows: .venv\Scripts\activate
+# source .venv/bin/activate  # Windows: .venv\\Scripts\\activate
 # python -m pip install --upgrade pip
 # pip install numpy pandas JPype1
 # ```
-#
+# 
 # Install the local `pytetrad` package from the repo root:
-#
+# 
 # ```bash
 # pip install -e .
 # ```
-#
-# **Optional packages** (only needed if uncommenting the visualisation cells):
-#
-# ```bash
-# pip install pyvis networkx
-# ```
-#
+# 
+# 
 # ### Required Files (in `causal_analysis_notebook/`)
-#
-# - `null_variable_dt.csv` — input dataset (raw or preprocessed format both supported)
+# 
+# - `null_variable_dt.csv` — input dataset 
 # - `mike_knowledge_box.txt` — domain-knowledge constraints for the causal search
-#
+# 
 # ### Working Directory and Kernel
-#
+# 
 # - Open notebook: `causal_analysis_notebook/causal_analysis.ipynb`.
 # - The notebook uses **relative file paths**, so the working directory must resolve to `causal_analysis_notebook/`. In VS Code this is automatic when opening the file directly; in JupyterLab, launch from inside the folder.
 # - Select the Python interpreter from the virtual environment where dependencies were installed.
 # - If helper modules change, **restart the kernel** before re-running.
-#
+# 
 # ### Configuration Checklist (Configuration cell)
-#
+# 
 # - `ALGORITHM`: `"boss"` or `"fges"`
 # - `DATA_PATH`: path to the input CSV (default: `null_variable_dt.csv`); change this to use a different dataset without modifying anything else
 # - `KNOWLEDGE_FILE`: verify the file exists (default: `mike_knowledge_box.txt`)
-# - `N_BOOTSTRAP`: lower for quick validation runs (e.g. `10`), increase for full analysis
-#
+# - `N_BOOTSTRAP`: lower for quick validation runs (e.g. `50`), increase for full analysis
+# 
 # ### Recommended Run Order
-#
+# 
 # 1. Run **Configuration** and **Import Libraries**.
 # 2. Run all **Feature Engineering** cells top-to-bottom.
 # 3. Run **FGES Null Variable Search**.
@@ -64,9 +79,9 @@
 # 5. Run **Non-Null Causal Search**.
 # 6. Run **Applying 1PNEF Threshold**.
 # 7. Run **Results** sections.
-#
+# 
 # ### Troubleshooting
-#
+# 
 # - **`AttributeError` on Tetrad methods:** restart the kernel and rerun from the top (JPype module reload issue).
 # - **Java heap / out-of-memory errors:** reduce `N_BOOTSTRAP` and rerun.
 # - **File not found:** confirm the working directory is `causal_analysis_notebook/` and that the required CSV and knowledge files are present.
@@ -74,24 +89,24 @@
 
 # %% [markdown]
 # ## Configuration
-#
+# 
 # Set algorithm parameters and file paths.
 
 # %%
 # Analysis Parameters
-ALGORITHM = "boss"  # Options: "boss" or "fges"
+ALGORITHM = "boss"  # Options: "boss" or "fges" (R notebook uses "boss" for final analysis)
 
 # Input/output paths
 DATA_PATH = "null_variable_dt.csv"  # Input CSV (raw or preprocessed format)
 
 KNOWLEDGE_FILE = "mike_knowledge_box.txt"
 
-# Algorithm-specific parameters
-N_BOOTSTRAP = 80 if ALGORITHM == "boss" else 50
+# Algorithm-specific parameters (R notebook: 1000 for BOSS, 500 for FGES)
+N_BOOTSTRAP = 50 if ALGORITHM == "boss" else 50
 
 # %% [markdown]
 # ## Import Libraries
-#
+# 
 # Load required modules for data processing and causal analysis.
 
 # %%
@@ -180,22 +195,24 @@ def parse_graph(graph_json_str):
 
 # %% [markdown]
 # # Feature Engineering
+# 
 
 # %% [markdown]
 # ## Formatting Data Types
-#
-# In order to be loaded in Tetrad, some variables must be transformed from String to Integer due to data type limitations.
+# 
+# In order to be loaded in Tetrad, some variables must be transformed from String to Integer due to data type limitations. 
 
 # %% [markdown]
 # ### CVE Data Type
-#
+# 
 # We concatenate the last two digits of the year with the last four digits of the cve_id and convert into an integer. (E.g. 2006 and CVE ID XXX4339 becomes 06339).
+# 
 
 # %%
+# Matches R: dt <- fread(...)
 raw_dt = pd.read_csv(DATA_PATH)
-print(f"Loaded: {raw_dt.shape[0]} rows × {raw_dt.shape[1]} columns")
 
-# CVE Data Type: encode cve_id if present; otherwise reconstruct from b_ indicator columns
+# Matches R: dt$cve_id <- as.integer(stri_c(last_two_digits_year, last_four_digits_cve))
 if "cve_id" in raw_dt.columns:
     cve_as_str = raw_dt["cve_id"].astype(str)
     cve_id_col = pd.to_numeric(cve_as_str.str.slice(6, 8) + cve_as_str.str.slice(-4), errors="coerce")
@@ -212,7 +229,8 @@ else:
     else:
         cve_id_col = range(len(raw_dt))
 
-# Activity features: derive from commit_interval if present, else from commit counts
+# Matches R: dt$activity_0 <- ifelse(dt$commit_interval == "",1,0)
+#            dt$activity_2 <- ifelse(dt$commit_interval != "",1,0)
 if "commit_interval" in raw_dt.columns:
     commit_interval = raw_dt["commit_interval"].fillna("").astype(str)
     activity_0_col = np.where(commit_interval.eq(""), 1, 0)
@@ -224,37 +242,35 @@ else:
     activity_0_col = 0
     activity_2_col = 0
 
-# Assign all new/updated columns at once to avoid fragmentation warnings
-raw_dt = raw_dt.assign(cve_id=cve_id_col, activity_0=activity_0_col, activity_2=activity_2_col)
-print("Completed: CVE Data Type")
+# Build new DataFrame via concat to avoid PerformanceWarning on fragmented frame
+new_cols = pd.DataFrame({"cve_id": cve_id_col, "activity_0": activity_0_col, "activity_2": activity_2_col})
+raw_dt = pd.concat([raw_dt.reset_index(drop=True), new_cols], axis=1)
+# If cve_id already existed in raw_dt, drop the original to avoid duplicate
+if raw_dt.columns.duplicated().any():
+    raw_dt = raw_dt.loc[:, ~raw_dt.columns.duplicated(keep="last")]
 
 # %% [markdown]
 # ### Convert "start" to Unix Timestamp
-#
-# To use start in causal analysis, we convert it to a unix timestamp.
+# 
+# To use start in causal analysis, we convert it to a unix timestamp. 
 
 # %%
-# Convert "start" to Unix Timestamp
-# If already numeric (unix timestamp), leave it as-is; otherwise parse from string/datetime
+# Matches R: dt$start <- as.numeric(dt$start)
 if "start_datetime" in raw_dt.columns:
     raw_dt["start"] = pd.to_datetime(raw_dt["start_datetime"], errors="coerce", utc=True)
     raw_dt["start"] = raw_dt["start"].map(lambda x: x.timestamp() if pd.notna(x) else np.nan)
 elif "start" in raw_dt.columns:
-    if pd.api.types.is_numeric_dtype(raw_dt["start"]):
-        pass  # already a Unix timestamp
-    else:
+    if not pd.api.types.is_numeric_dtype(raw_dt["start"]):
         raw_dt["start"] = pd.to_datetime(raw_dt["start"], errors="coerce", utc=True)
         raw_dt["start"] = raw_dt["start"].map(lambda x: x.timestamp() if pd.notna(x) else np.nan)
 else:
     raise ValueError("Expected either 'start_datetime' or 'start' column in data")
 
-print("Completed: Convert 'start' to Unix Timestamp")
-
 # %% [markdown]
 # ## Feature Renaming
 
 # %%
-# Feature Renaming: shorten long column names; skip columns not present
+# Matches R: setnames(x=dt, old=c("start_datetime",...), new=c("start",...))
 rename_map = {
     "start_datetime": "start",
     "missing_links": "mis_link",
@@ -267,27 +283,26 @@ rename_map = {
 }
 raw_dt = raw_dt.rename(columns={k: v for k, v in rename_map.items() if k in raw_dt.columns})
 
-# Collect all missing required columns and assign them at once
+# Matches R: dt <- dt[,.(cve_id, activity_0, activity_2, start, org_silo, ...)]
 required_cols = [
     "cve_id", "activity_0", "activity_2", "start",
     "org_silo", "mis_link", "silence", "code_dev", "file",
     "mail_dev", "thread", "commit", "churn"
 ]
-missing_cols = {col: 0 for col in required_cols if col not in raw_dt.columns}
-if missing_cols:
-    raw_dt = raw_dt.assign(**missing_cols)
+for col in required_cols:
+    if col not in raw_dt.columns:
+        raw_dt[col] = 0
 
 dt = raw_dt[required_cols].copy()
-print(f"After Feature Renaming: {dt.shape[0]} rows × {dt.shape[1]} columns")
 
 # %% [markdown]
 # ## Missing Data Handling
-#
+# 
 # We decided to remove rows from the dataset for which the mailing list data source is missing (i.e. 2000-2001).
 
 # %%
-# Convert start to datetime for year-based filtering, handling both
-# numeric Unix timestamps and string datetime formats
+# Matches R: dt$start <- lubridate::ymd_hms(dt$start)
+#            dt <- dt[(year(start) < 2000) | (year(start) > 2001)]
 if pd.api.types.is_numeric_dtype(dt["start"]):
     start_dt_series = pd.to_datetime(dt["start"], unit='s', utc=True, errors='coerce')
 else:
@@ -298,13 +313,15 @@ dt = dt[mask].copy()
 start_dt_series = start_dt_series[mask]
 
 dt["start"] = start_dt_series.map(lambda x: x.timestamp() if pd.notna(x) else np.nan)
+
+# Matches R: setnafill(dt, cols = colnames(dt), fill = 0)
 dt = dt.fillna(0)
-print(f"After Missing Data Transformations: {dt.shape[0]} rows × {dt.shape[1]} columns")
 
 # %% [markdown]
 # ## 1-Time Lag Features
 
 # %%
+# Matches R: add_time_lag function + lag_dt <- dt[order(cve_id,start)][, add_time_lag(.SD), by = c("cve_id")]
 lag_feature_cols = [
     "org_silo", "mis_link", "silence", "code_dev", "file",
     "mail_dev", "thread", "commit", "churn"
@@ -329,40 +346,52 @@ def add_time_lag(cve_table: pd.DataFrame) -> pd.DataFrame:
 
 lag_parts = [add_time_lag(group) for _, group in dt.groupby("cve_id", sort=False)]
 lag_dt = pd.concat(lag_parts, ignore_index=True)
-print(f"After Appending Next Time Period Variables: {lag_dt.shape[0]} rows × {lag_dt.shape[1]} columns")
 
 # %% [markdown]
 # ## Remove Short CVEs
-#
+# 
 # We deleted CVEs (their associated rows) with 7 or fewer time periods.
 
 # %%
-cve_counts = lag_dt.groupby("cve_id").size()
-short_cve_ids = cve_counts[cve_counts <= 7].index
+# Matches R: short_cves <- lag_dt[,.(n_rows=.N),by="cve_id"][order(n_rows)][n_rows <= 7]
+#            short_cves
+cve_counts = lag_dt.groupby("cve_id").size().reset_index(name="n_rows").sort_values("n_rows")
+short_cves = cve_counts[cve_counts["n_rows"] <= 7]
+print(short_cves.to_string(index=False))
+
+# Matches R: lag_dt <- lag_dt[!(cve_id %in% short_cve_ids)]
+short_cve_ids = short_cves["cve_id"].values
 lag_dt = lag_dt[~lag_dt["cve_id"].isin(short_cve_ids)].copy()
-print(f"After Removing Short CVEs: {lag_dt.shape[0]} rows × {lag_dt.shape[1]} columns")
 
 # %% [markdown]
 # ## Addressing Determinism and High Intercorrelation Among Features
-#
+# 
 # Due to high correlation, we perform 6 feature deletions (activity_0, activity_2, org_silo, org_silo2):
 
 # %%
-selected_cols = [
-    "cve_id", "start",
+# Matches R: cor(cor_table) where cor_table includes org_silo through churn2
+cor_cols = [c for c in ["org_silo", "mis_link", "silence", "code_dev", "file",
+                         "mail_dev", "thread", "commit", "churn",
+                         "org_silo2", "mis_link2", "silence2", "code_dev2", "file2",
+                         "mail_dev2", "thread2", "commit2", "churn2"]
+            if c in lag_dt.columns]
+cor_table = lag_dt[cor_cols]
+print(cor_table.corr().to_string())
+
+# %%
+# Matches R: lag_dt <- lag_dt[,.(cve_id, start, mis_link, ..., churn2)]
+lag_dt = lag_dt[["cve_id", "start",
     "mis_link", "silence", "code_dev", "file",
     "mail_dev", "thread", "commit", "churn",
     "mis_link2", "silence2", "code_dev2", "file2",
     "mail_dev2", "thread2", "commit2", "churn2"
-]
-lag_dt = lag_dt[selected_cols].copy()
-print(f"After Correlation/Determinism Pruning: {lag_dt.shape[0]} rows × {lag_dt.shape[1]} columns")
+]].copy()
 
 # %% [markdown]
 # ## Binarized CVE Indicators
-#
+# 
 # To represent the CVE Ids, we utilize indicator features. For every CVE ID, a new column is added to the table which can take values 0 or 1. The value is 1 if the row is associated to that CVE ID, or 0 otherwise.
-#
+# 
 # We can then remove the `cve_id` column, as the binary features represent the same information, and add the remaining columns to the analysis table:
 
 # %%
@@ -372,63 +401,61 @@ cve_binarized = pd.get_dummies(
     dtype=int
 )
 
+# Matches R: head(cbind(cve_id=lag_dt$cve_id,binarize_cve_id))
+binarize_preview = pd.concat([
+    lag_dt[["cve_id"]].reset_index(drop=True),
+    cve_binarized.reset_index(drop=True)
+], axis=1)
+print(binarize_preview.head(6).to_string())
+
+# %%
+# Matches R: lag_dt <- lag_dt[,.(start, mis_link, ..., churn2)]
+#            binarized_lag_dt <- cbind(lag_dt, binarize_cve_id[,(2:ncol),with=FALSE])
 binarized_lag_dt = pd.concat([
     lag_dt.drop(columns=["cve_id"]).reset_index(drop=True),
     cve_binarized.reset_index(drop=True)
 ], axis=1)
-print(f"After Binarize CVE ID: {binarized_lag_dt.shape[0]} rows × {binarized_lag_dt.shape[1]} columns")
 
 # %% [markdown]
 # ## Add Null Features
-#
-# ## Keep only 5 null indicator features
-#
-# Introducing a null feature for all variables and features leads to too many features being introduced for causal search, causing heap memory errors in Tetrad. We preserve only a few of the nv binary indicator variables, as they lead to variable explosion and their pattern is easy to randomize. Position 138 includes all variables as null variables, plus five binary indicators as null variables. We consider this loss of null binary indicator features reasonable, as the randomization of a few blocks of values 1 or 0 will generally be equivalent. This in turn, allow us to perform more causal search runs, which we deem a fair trade-off.
+# 
+# An example of the randomization only showing the silence and nv-silence is shown below. In practice, for every column in `binarized_lag_dt`, we generate a replica column prefixed by `nv-`, including the binary features (which are then prefixed as `nv-b_`), but the replica columns have their values shuffled across the rows, hence the null (random) naming to them.
 
 # %%
+# Matches R: nv_lag_dt <- binarized_lag_dt; colnames(nv_lag_dt) <- stri_c("nv-",...); 
+#            nv_lag_dt <- apply(nv_lag_dt,2,sample); nv_lag_dt <- cbind(binarized_lag_dt,nv_lag_dt)
 rng = np.random.default_rng(32)
 null_df = pd.DataFrame(
     {col: rng.permutation(binarized_lag_dt[col].to_numpy()) for col in binarized_lag_dt.columns}
 )
 null_df.columns = [f"nv-{col}" for col in null_df.columns]
 
-null_non_indicator_cols = [c for c in null_df.columns if not c.startswith("nv-b_")]
-null_indicator_cols = [c for c in null_df.columns if c.startswith("nv-b_")]
-null_keep_cols = null_non_indicator_cols + null_indicator_cols[:5]
-null_df = null_df[null_keep_cols]
+nv_lag_dt = pd.concat([binarized_lag_dt, null_df], axis=1)
 
-processed_dt = pd.concat([binarized_lag_dt, null_df], axis=1)
-
-# Save outputs to processed_data/ — input DATA_PATH is never modified
-os.makedirs("processed_data", exist_ok=True)
-processed_dt.to_csv("processed_data/null_variable_processed_dt.csv", index=False)
-binarized_lag_dt.to_csv("processed_data/binarized_variable_dt.csv", index=False)
-
-print(f"✓ Saved null-variable dataset : processed_data/null_variable_processed_dt.csv ({processed_dt.shape[0]} × {processed_dt.shape[1]})")
-print(f"✓ Saved non-null dataset      : processed_data/binarized_variable_dt.csv ({binarized_lag_dt.shape[0]} × {binarized_lag_dt.shape[1]})")
-
-# Use processed data in-memory for the rest of the notebook
-data = processed_dt.copy()
-data = data.astype({col: "float64" for col in data.columns})
-print(f"Dataset: {data.shape[0]} rows × {data.shape[1]} columns")
+# Matches R: head(nv_lag_dt[,.(silence,`nv-silence`)])
+print(nv_lag_dt[["silence", "nv-silence"]].head(6).to_string())
 
 # %% [markdown]
-# ## Variable Analysis
-#
-# Identify binary CVE indicators, continuous metrics, and null variables.
+# ## Keep only 5 null indicator features
+# 
+# Introducing a null feature for all variables and features leads to too many features being introduced for causal search, causing heap memory errors in Tetrad. We preserve only a few of the nv binary indicator variables, as they lead to variable explosion and their pattern is easy to randomize. Position 138 includes all variables as null variables, plus five binary indicators as null variables. We consider this loss of null binary indicator features reasonable, as the randomization of a few blocks of values 1 or 0 will generally be equivalent. This in turn, allow us to perform more causal search runs, which we deem a fair trade-off.
 
 # %%
-b_cols      = [col for col in data.columns if col.startswith('b_')]
-nv_cols     = [col for col in data.columns if col.startswith('nv-')]
-metric_cols = [col for col in data.columns if not col.startswith('b_') and not col.startswith('nv-')]
+# Matches R: nv_lag_dt <- nv_lag_dt[,1:138]
+nv_lag_dt = nv_lag_dt.iloc[:, :138]
 
-print(f"Binary indicators: {len(b_cols)}")
-print(f"Continuous metrics: {len(metric_cols)}")
-print(f"Null variables: {len(nv_cols)}")
+# %%
+# Matches R: nv_lag_dt_path <- "/tmp/null_variable_dt.csv"; fwrite(nv_lag_dt, nv_lag_dt_path)
+os.makedirs("processed_data", exist_ok=True)
+nv_lag_dt.to_csv("processed_data/null_variable_processed_dt.csv", index=False)
+binarized_lag_dt.to_csv("processed_data/binarized_variable_dt.csv", index=False)
+
+# Use processed data in-memory for the rest of the notebook
+data = nv_lag_dt.astype({col: "float64" for col in nv_lag_dt.columns})
 
 # %% [markdown]
 # # FGES Null Variable Search
-#
+# 
 # Executes causal discovery with bootstrapping over the null-variable dataset.
 
 # %%
@@ -474,76 +501,72 @@ print(f"Elapsed: {elapsed:.1f}s")
 
 null_graph_json = str(search.get_json())
 
-# %%
-import glob
-import shutil
-
-os.makedirs("logs", exist_ok=True)
-log_files = glob.glob("*.log")
-for f in log_files:
-    shutil.move(f, os.path.join("logs", os.path.basename(f)))
-if log_files:
-    print(f"Moved {len(log_files)} log file(s) to logs/")
-
 # %% [markdown]
 # ---
-#
+# 
 # # Deriving the 1 PNEF Threshold
-#
+# 
 # In our causal search above, we introduced null features over multiple bootstrap runs to observe how often our causal search forms random edges (i.e. between our features and null features). We will use this information to derive a threshold, **1PNEF** (1st Percentile NoEdge Frequency), we can use in our final causal search.
-#
+# 
 # ## Graph Examination
-#
+# 
 # We parse the Tetrad JSON graph output into tabular format: nodes, edgeset, and edge type probabilities.
-#
+# 
 # The **edgeset** table contains the ensemble edge for each node pair. Because we performed multiple bootstrap runs, the probabilities represent the ensemble of all edges formed on each execution.
-#
+# 
 # The **edge_type_probabilities** table shows the counts of each type of edge formed on each subgraph across all bootstrap runs.
 
 # %%
+# Matches R: graph <- parse_graph(filepath)
 null_graph = parse_graph(null_graph_json)
 
-print(f"Nodes: {len(null_graph['nodes'])}")
-print(f"\nFirst 5 nodes:")
-print(null_graph['nodes'].head())
-print(f"\nEdgeset: {len(null_graph['edgeset'])} edges")
-print(null_graph['edgeset'].head())
-print(f"\nEdge type probabilities: {len(null_graph['edge_type_probabilities'])} entries")
-print(null_graph['edge_type_probabilities'].head())
+# Matches R: head(graph[["nodes"]])
+print(null_graph['nodes'].head(6).to_string())
+
+# Matches R: head(graph[["edgeset"]])
+print(f"\n")
+print(null_graph['edgeset'].head(6).to_string())
+
+# Matches R: head(graph[["edge_type_probabilities"]])
+print(f"\n")
+print(null_graph['edge_type_probabilities'].head(6).to_string())
 
 # %% [markdown]
 # ## Deriving 1 PNEF
-#
+# 
 # Our interest is to derive a threshold for the final causal search, using the information from this bootstrapped null feature causal search. By definition, edges formed between actual variables and random (null) features represent random edges.
-#
+# 
 # We:
 # 1. Subset the edgeset to contain only edges where at least one node is a null variable (nv-*)
 # 2. Derive a `no_edge` probability by subtracting the probability from 1
 # 3. Identify the 1st percentile value of the no_edge probability → the **1PNEF threshold**
-#
+# 
 # This threshold tells us: given entirely random variables, causal links were formed between them up to X% of the time. In our final search, we only keep causal links that formed **more** than X% of the time.
 
 # %%
+# Matches R: nv_edges <- copy(graph[["edgeset"]]); filter to nv- nodes; head(nv_edges)
 nv_edges = null_graph['edgeset'].copy()
 is_node1_nv = nv_edges['node1_name'].str.contains('nv-', regex=False)
 is_node2_nv = nv_edges['node2_name'].str.contains('nv-', regex=False)
 nv_edges = nv_edges[is_node1_nv | is_node2_nv]
-nv_edges.head()
+print(nv_edges.head(6).to_string())
 
+# Matches R: nv_edges$no_edge <- 1 - nv_edges$probability
 nv_edges['no_edge'] = 1 - nv_edges['probability']
 
+# Matches R: pnef_1 <- quantile(nv_edges$no_edge, probs=0.01); pnef_1
 pnef_1 = float(nv_edges['no_edge'].quantile(0.01))
-pnef_1
+print(f"\n1%\n{pnef_1}")
 
 # %% [markdown]
 # ---
-#
+# 
 # # Non-Null Causal Search
-#
+# 
 # With the threshold defined, we now proceed to the final causal search, which **does not include null features**. In this non-null feature causal search, we also specify domain knowledge to prohibit causal links that don't make sense temporally (e.g. features at 1-time-lag cannot cause features in the present).
-#
+# 
 # ## Domain Knowledge Causal Search without Null Variables
-#
+# 
 # Remove null variable columns (nv-*) from the dataset, keeping only the original features and binary CVE indicators.
 
 # %%
@@ -555,7 +578,7 @@ print(f"Saved to: processed_data/binarized_variable_dt.csv")
 
 # %% [markdown]
 # ## Causal Search
-#
+# 
 # Run the causal search on the non-null dataset with domain knowledge constraints. This search uses the same algorithm and bootstrap settings, but on the dataset **without** null features and **with** temporal knowledge constraints.
 
 # %%
@@ -582,6 +605,8 @@ else:
         domain_search.load_knowledge(KNOWLEDGE_FILE)
         print(f"Knowledge loaded from: {KNOWLEDGE_FILE}")
 
+import jpype
+_System = jpype.JClass("java.lang.System")
 _orig_out = _System.out
 _System.setOut(jpype.JClass("java.io.PrintStream")(
     jpype.JClass("java.io.ByteArrayOutputStream")()
@@ -605,20 +630,9 @@ print(f"Elapsed: {elapsed:.1f}s")
 
 domain_graph_json = str(domain_search.get_json())
 
-# %%
-import glob
-import shutil
-
-os.makedirs("logs", exist_ok=True)
-log_files = glob.glob("*.log")
-for f in log_files:
-    shutil.move(f, os.path.join("logs", os.path.basename(f)))
-if log_files:
-    print(f"Moved {len(log_files)} log file(s) to logs/")
-
 # %% [markdown]
 # ## Graph Examination
-#
+# 
 # Parse the domain knowledge causal search JSON output into nodes, edgeset, and edge type probabilities.
 
 # %%
@@ -630,13 +644,14 @@ print(f"Domain search edges: {len(domain_graph['edgeset'])}")
 print(f"\nEdgeset sample:")
 domain_graph['edgeset'].head()
 
+
 # %% [markdown]
 # ---
-#
+# 
 # # Applying 1PNEF Threshold
-#
+# 
 # ## Applying 1PNEF Threshold
-#
+# 
 # Edges which may have been formed at random are filtered here. We apply the 1PNEF threshold derived from the null variable search to the domain knowledge search results. Only edges whose `no_edge` probability is less than or equal to the 1PNEF threshold are kept.
 
 # %%
@@ -657,15 +672,15 @@ print(f"✓ Saved filtered edges to {output_dir}/edges_1pnef.csv")
 
 # %% [markdown]
 # ---
-#
+# 
 # # Results
-#
+# 
 # With the final causal graph trimmed, we can now inspect it to draw conclusions. Causal graphs may form cycles and have undirected edges.
-#
+# 
 # ## Full Causal Graph 1-PNEF Trimmed
-#
+# 
 # Interactive visualization of the full causal graph after applying the 1PNEF threshold.
-#
+# 
 # Edge colors:
 # - **Black**: Directed edges (causal relationship)
 # - **Red**: Undirected edges (TAIL-TAIL, association without determined direction)
@@ -749,7 +764,7 @@ print(f"✓ Saved filtered edges to {output_dir}/edges_1pnef.csv")
 
 # %% [markdown]
 # <!-- ## Sub-Graphs of Effort Variables and Parents
-#
+# 
 # Focus on key effort variables and their neighboring causal structure in a smaller sub-graph. -->
 
 # %%
@@ -809,7 +824,7 @@ print(f"✓ Saved filtered edges to {output_dir}/edges_1pnef.csv")
 
 # %% [markdown]
 # <!-- ## Cycle Detection
-#
+# 
 # Check if the causal graph contains any cycles. Cycles indicate feedback loops in the causal structure. -->
 
 # %%
@@ -838,3 +853,5 @@ print(f"✓ Saved filtered edges to {output_dir}/edges_1pnef.csv")
 #             print(f"  Cycle {i} (length {len(cycle)}): {cycle_str}")
 # else:
 #     print("Cycle detection skipped (networkx unavailable or no edges).")
+
+
