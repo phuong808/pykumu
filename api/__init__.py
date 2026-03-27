@@ -20,7 +20,7 @@ wrappers around Tetrad's Java classes:
 
 ## Vignettes
 
-- [Issue Causal Analysis](../vignettes/issue_causal_analysis.html) --
+- [Issue Causal Analysis](/pykumu/vignettes/issue_causal_analysis.html) --
   end-to-end causal discovery workflow demonstrating data preparation,
   null-variable bootstrapped search, 1-PNEF threshold derivation,
   and final causal graph inspection.
