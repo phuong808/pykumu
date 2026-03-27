@@ -1,22 +1,29 @@
+# Pykumu - https://github.com/sailuh/pykumu
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
+"""Translation between pandas and Tetrad Java objects.
+
+This module provides functions to convert pandas DataFrames into
+Tetrad-compatible Java data structures (BoxDataSet).
+"""
+
 import numpy as np
 import pandas as pd
 from pandas import DataFrame
 
-import java.util as util
-import edu.cmu.tetrad.data as td
-import edu.cmu.tetrad.graph as tg
+try:
+    import java.util as util
+    import edu.cmu.tetrad.data as td
+    import edu.cmu.tetrad.graph as tg
+except ImportError:
+    pass
 
 
-"""
-    Pykumu - https://github.com/sailuh/pykumu
-    
-    This Source Code Form is subject to the terms of the Mozilla Public
-    License, v. 2.0. If a copy of the MPL was not distributed with this
-    file, You can obtain one at https://mozilla.org/MPL/2.0/.
-"""
-
-"""
-    Convert a pandas DataFrame to a Tetrad-compatible BoxDataSet.
+def pandas_data_to_tetrad(df: DataFrame, int_as_cont=False):
+    """Convert a pandas DataFrame to a Tetrad-compatible BoxDataSet.
 
     Columns with float dtypes are treated as continuous variables. All other
     columns are treated as discrete variables unless int_as_cont is True,
@@ -25,10 +32,7 @@ import edu.cmu.tetrad.graph as tg
     :param df: pandas DataFrame to convert
     :param int_as_cont: If True, treat integer columns as continuous rather than discrete
     :returns: Tetrad BoxDataSet object
-    
-"""
-def pandas_data_to_tetrad(df: DataFrame, int_as_cont=False):
-    
+    """
     dtypes = ["float16", "float32", "float64"]
     if int_as_cont:
         for i in range(3, 7):
@@ -36,8 +40,6 @@ def pandas_data_to_tetrad(df: DataFrame, int_as_cont=False):
             dtypes.append(f"uint{2 ** i}")
     cols = df.columns
     discrete_cols = [col for col in cols if df[col].dtypes not in dtypes]
-    category_map = {col: {val: i for i, val in enumerate(df[col].unique())} for col in discrete_cols}
-    # df = df.replace(category_map) // Deprecated
 
     category_map = {
         col: {val: i for i, val in enumerate(df[col].unique())}
@@ -47,7 +49,7 @@ def pandas_data_to_tetrad(df: DataFrame, int_as_cont=False):
     df = df.copy()
     for col in discrete_cols:
         s = df[col].map(category_map[col])
-        df[col] = s.astype("int64")  # or "Int64" if you want pandas NA support
+        df[col] = s.astype("int64")
 
     values = df.values
     n, p = df.shape

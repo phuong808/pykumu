@@ -1,19 +1,26 @@
-import edu.cmu.tetrad.algcomparison.algorithm.oracle.cpdag as cpdag
-from edu.cmu.tetrad.util import Params
+# Pykumu - https://github.com/sailuh/pykumu
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+"""Algorithm execution for structure learning.
 
+This module provides functions for running causal search algorithms
+(FGES, BOSS) using the Tetrad library via JPype.
 """
-    Pykumu - https://github.com/sailuh/pykumu
-    
-    This Source Code Form is subject to the terms of the Mozilla Public
-    License, v. 2.0. If a copy of the MPL was not distributed with this
-    file, You can obtain one at https://mozilla.org/MPL/2.0/.
-"""
 
-"""
-    Algorithm FGES
+try:
+    import edu.cmu.tetrad.algcomparison.algorithm.oracle.cpdag as cpdag
+    from edu.cmu.tetrad.util import Params
+except ImportError:
+    pass
 
-    Implements the Fast Greedy Equivalence Search (FGES) algorithm.
+
+def run_fges(data, params, score, knowledge, symmetric_first_step=False, max_degree=-1,
+             parallelized=False, faithfulness_assumed=False):
+    """Implements the Fast Greedy Equivalence Search (FGES) algorithm.
+
     This is an implementation of the Greedy Equivalence Search algorithm,
     originally due to Chris Meek but developed significantly by Max Chickering.
     FGES uses with some optimizations that allow it to scale accurately to
@@ -42,18 +49,17 @@ from edu.cmu.tetrad.util import Params
     :param knowledge: Tetrad Knowledge object
     :param symmetric_first_step: TRUE if the first step step for FGES should do scoring for both X->Y and Y->X
     :param max_degree: Integer. The maximum degree of the graph (min = -1)
-    from different random starting permutations. The model with the most
-    optimal BIC score will be selected. Random after the first. Defaults to 1.
+        from different random starting permutations. The model with the most
+        optimal BIC score will be selected. Random after the first. Defaults to 1.
     :param parallelized: TRUE if the search should be parallelized
     :param faithfulness_assumed: TRUE if (one edge) faithfulness should be assumed
     :returns: dict with 'graph' (Java graph object) and 'bootstrap_graphs'
 
-    :references Ramsey, J., Glymour, M., Sanchez-Romero, R., & Glymour, C. (2017). A million variables and more: the fast greedy equivalence search algorithm for learning high-dimensional graphical causal models, with an application to functional magnetic resonance images. International journal of data science and analytics, 3, 121-129.
-
-"""
-def run_fges(data, params, score, knowledge, symmetric_first_step=False, max_degree=-1,
-             parallelized=False, faithfulness_assumed=False):
-    
+    :references: Ramsey, J., Glymour, M., Sanchez-Romero, R., & Glymour, C. (2017).
+        A million variables and more: the fast greedy equivalence search algorithm for
+        learning high-dimensional graphical causal models, with an application to functional
+        magnetic resonance images. International journal of data science and analytics, 3, 121-129.
+    """
     alg = cpdag.Fges(score)
     alg.setKnowledge(knowledge)
 
@@ -68,23 +74,24 @@ def run_fges(data, params, score, knowledge, symmetric_first_step=False, max_deg
     return {"graph": graph, "bootstrap_graphs": bootstrap_graphs}
 
 
-"""
-    Algorithm BOSS
+def run_boss(data, params, score, knowledge, num_starts=1, use_bes=False, time_lag=0,
+             use_data_order=True, output_cpdag=True):
+    """Implements the BOSS (Best Order Score Search) algorithm.
 
     BOSS (Best Order Score Search) is an algorithm that, like GRaSP,
     generalizes and extends the GSP (Greedy Sparsest Permutation) algorithm.
     It has been tested to 1000 variables with an average degree of 20 and gives
     near perfect precisions and recalls for N = 10,000
     (with recall that drop to 0.9 for N = 1000).
-    
+
     The algorithms works by building DAGs given permutations in ways similar
     to those described in Raskutti and Uhler and Solus et al. (see references below)
-    
+
     Knowledge of forbidden edges and required edges may be used with this algorithm.
     Also, knowledge of tiers may be used. If tiered knowledge is supplied,
     the algorithm will analyze the tiers in order, so that the time required
     for the algorithm is linear in the number of tiers.
-    
+
     For more details, see: https://www.phil.cmu.edu/tetrad-javadocs/7.4.0/edu/cmu/tetrad/search/Boss.html
     and https://cmu-phil.github.io/tetrad/manual/#boss
 
@@ -94,25 +101,25 @@ def run_fges(data, params, score, knowledge, symmetric_first_step=False, max_deg
     :param knowledge: Tetrad Knowledge object
     :param num_starts: Number of random starts
     :param use_bes: TRUE if the final BES (Backward Equivalence Search) step is
-    used from the GES (Greedy Equivalence Search) algorithm.
-    This step is needed for correctness but for large models,
-    since usually nearly all edges are oriented in the CPDAG,
-    it is heuristically not needed.
+        used from the GES (Greedy Equivalence Search) algorithm.
+        This step is needed for correctness but for large models,
+        since usually nearly all edges are oriented in the CPDAG,
+        it is heuristically not needed.
     :param time_lag: This creates a time-series model automatically with a certain
-    number of lags. Defaults to zero.
+        number of lags. Defaults to zero.
     :param use_data_order: TRUE just in case data variable order should be used for the first initial permutation.
     :param output_cpdag: Whether to output CPDAG
     :returns: dict with 'graph' (Java graph object) and 'bootstrap_graphs'
 
-    :references Dimitris Margaritis and Sebastian Thrun. Bayesian network induction via local neighborhoods. Advances in neural information processing systems, 12, 1999.
-    :references G., & Uhler, C. (2018). Learning directed acyclic graph models based on sparsest permutations. Stat, 7(1), e183.
-    :references Solus, L., Wang, Y., Matejovicova, L., & Uhler, C. (2017). Consistency guarantees for permutation-based causal inference algorithms. arXiv preprint arXiv:1702.03530.
-    :references Lam, W. Y., Andrews, B., & Ramsey, J. (2022, August). Greedy relaxations of the sparsest permutation algorithm. In Uncertainty in Artificial Intelligence (pp. 1052-1062). PMLR.
-
-"""
-def run_boss(data, params, score, knowledge, num_starts=1, use_bes=False, time_lag=0,
-             use_data_order=True, output_cpdag=True):
-    
+    :references: Dimitris Margaritis and Sebastian Thrun. Bayesian network induction via
+        local neighborhoods. Advances in neural information processing systems, 12, 1999.
+    :references: G., & Uhler, C. (2018). Learning directed acyclic graph models based on
+        sparsest permutations. Stat, 7(1), e183.
+    :references: Solus, L., Wang, Y., Matejovicova, L., & Uhler, C. (2017). Consistency
+        guarantees for permutation-based causal inference algorithms. arXiv preprint arXiv:1702.03530.
+    :references: Lam, W. Y., Andrews, B., & Ramsey, J. (2022, August). Greedy relaxations of
+        the sparsest permutation algorithm. In Uncertainty in Artificial Intelligence (pp. 1052-1062). PMLR.
+    """
     params.set(Params.USE_BES, use_bes)
     params.set(Params.NUM_STARTS, num_starts)
     params.set(Params.TIME_LAG, time_lag)
