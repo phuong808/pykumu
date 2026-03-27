@@ -1,19 +1,32 @@
-"""Score-configuration helpers for Tetrad search runs."""
+import edu.cmu.tetrad.algcomparison.score as score_
+from edu.cmu.tetrad.util import Params
 
-from __future__ import annotations
 
+"""
+    Pykumu - https://github.com/sailuh/pykumu
+    
+    This Source Code Form is subject to the terms of the Mozilla Public
+    License, v. 2.0. If a copy of the MPL was not distributed with this
+    file, You can obtain one at https://mozilla.org/MPL/2.0/.
+"""
 
-def configure_default_score(
-    search,
-    penalty_discount: float = 2,
-    sem_bic_rule: int = 1,
-    structure_prior: float = 0,
-    singularity_lambda: float = 0.0,
-) -> None:
-    """Configure the SEM-BIC score used by the notebook workflow."""
-    search.use_sem_bic(
-        penalty_discount=penalty_discount,
-        sem_bic_rule=sem_bic_rule,
-        structurePrior=structure_prior,
-        singularity_lambda=singularity_lambda,
-    )
+"""
+    Sem BIC Score
+
+    Configure and return a SEM BIC score.
+
+    :param params: Tetrad Parameters object
+    :param penalty_discount: Penalty discount (min = 0.0)
+    :param sem_bic_structure_prior: Structure Prior for SEM BIC (default 0)
+    :param sem_bic_rule: BIC rule selection (1 = default)
+    :param singularity_lambda: >= 0 adds lambda to matrix diagonals, < 0 uses pseudoinverse
+    :returns: SemBicScore object
+    
+"""
+def use_sem_bic(params, penalty_discount=2, sem_bic_structure_prior=0, sem_bic_rule=1, singularity_lambda=0.0):
+    
+    params.set(Params.PENALTY_DISCOUNT, penalty_discount)
+    params.set(Params.SEM_BIC_STRUCTURE_PRIOR, sem_bic_structure_prior)
+    params.set(Params.SEM_BIC_RULE, sem_bic_rule)
+    params.set(Params.SINGULARITY_LAMBDA, singularity_lambda)
+    return score_.SemBicScore()

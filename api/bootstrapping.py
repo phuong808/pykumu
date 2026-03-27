@@ -1,25 +1,33 @@
-"""Bootstrapping configuration helpers."""
-
-from __future__ import annotations
+from edu.cmu.tetrad.util import Params
 
 
-def configure_bootstrapping(search, algorithm: str, n_bootstrap: int) -> None:
-    """Configure algorithm-specific bootstrapping settings."""
-    if algorithm == "boss":
-        search.set_bootstrapping(
-            numberResampling=n_bootstrap,
-            percent_resample_size=100,
-            seed=32,
-            add_original=True,
-            with_replacement=True,
-            resampling_ensemble=1,
-        )
-    else:
-        search.set_bootstrapping(
-            numberResampling=n_bootstrap,
-            percent_resample_size=90,
-            seed=32,
-            add_original=True,
-            with_replacement=True,
-            resampling_ensemble=1,
-        )
+"""
+    Pykumu - https://github.com/sailuh/pykumu
+    
+    This Source Code Form is subject to the terms of the Mozilla Public
+    License, v. 2.0. If a copy of the MPL was not distributed with this
+    file, You can obtain one at https://mozilla.org/MPL/2.0/.
+"""
+
+"""
+    Bootstrapping
+
+    :param params: Tetrad Parameters object
+    :param number_resampling: The number of bootstraps/resampling iterations (min = 0)
+    :param percent_resample_size: The percentage of resample size (min = 10\%)
+    :param add_original_dataset: Yes, if adding the original dataset as another bootstrapping
+    :param resampling_with_replacement: Yes, if sampling with replacement (bootstrapping)
+    :param resampling_ensemble: Ensemble method: Preserved (1), Highest (2), Majority (3).
+    Use any other number to not include the flag.
+    :param seed: Seed for pseudorandom number generator (-1 = off)
+    
+"""
+def set_bootstrapping(params, number_resampling=0, percent_resample_size=100, add_original_dataset=True,
+                      resampling_with_replacement=True, resampling_ensemble=1, seed=-1):
+    
+    params.set(Params.NUMBER_RESAMPLING, number_resampling)
+    params.set(Params.PERCENT_RESAMPLE_SIZE, percent_resample_size)
+    params.set(Params.ADD_ORIGINAL_DATASET, add_original_dataset)
+    params.set(Params.RESAMPLING_WITH_REPLACEMENT, resampling_with_replacement)
+    params.set(Params.RESAMPLING_ENSEMBLE, resampling_ensemble)
+    params.set(Params.SEED, seed)

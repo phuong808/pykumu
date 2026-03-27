@@ -7,17 +7,13 @@ __pycache__
 
 
 # Causal analysis result folders
-causal_analysis_notebook/boss_domain_results/
-causal_analysis_notebook/fges_domain_results/
+vignettes/boss_domain_results/
+vignettes/fges_domain_results/
 
 
 # Generated pre-processed data folder
-causal_analysis_notebook/processed_data/
-
-
-# Crash logs
-causal_analysis_notebook/hs_err_pid*.log
+vignettes/processed_data/
 
 
 # Python cache
-causal_analysis_notebook/__pycache__/
+vignettes/__pycache__/

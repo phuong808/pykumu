@@ -1,159 +1,118 @@
-"""Algorithm execution helpers for structure learning."""
-
-from __future__ import annotations
-
-import time
-
-import api.translate as tr
+import edu.cmu.tetrad.algcomparison.algorithm.oracle.cpdag as cpdag
+from edu.cmu.tetrad.util import Params
 
 
-def _load_java_modules():
-    """Load Java-backed Tetrad modules after the JVM is initialized."""
-    import edu.cmu.tetrad.algcomparison.algorithm.oracle.cpdag as cpdag
-    import edu.cmu.tetrad.algcomparison.score as score_
-    import edu.cmu.tetrad.data as td
-    import edu.cmu.tetrad.graph.GraphSaveLoadUtils as gp
-    import java.io as io
-    from edu.cmu.tetrad.util import Params, Parameters
+"""
+    Pykumu - https://github.com/sailuh/pykumu
+    
+    This Source Code Form is subject to the terms of the Mozilla Public
+    License, v. 2.0. If a copy of the MPL was not distributed with this
+    file, You can obtain one at https://mozilla.org/MPL/2.0/.
+"""
 
-    return cpdag, score_, td, gp, io, Params, Parameters
+"""
+    Algorithm FGES
 
+    Implements the Fast Greedy Equivalence Search (FGES) algorithm.
+    This is an implementation of the Greedy Equivalence Search algorithm,
+    originally due to Chris Meek but developed significantly by Max Chickering.
+    FGES uses with some optimizations that allow it to scale accurately to
+    thousands of variables accurately for the sparse case. The reference for FGES is this:
+    The reference for Chickering's GES is this:
+    Chickering (2002) "Optimal structure identification with greedy search"
+    Journal of Machine Learning Research.
+    FGES works for the continuous case, the discrete case,
+    and the mixed continuous/discrete case, so long as a BIC score is available
+    for the type of data in question.
+    To speed things up, it has been assumed that variables X and Y with
+    zero correlation do not correspond to edges in the graph. This is a
+    restricted form of the heuristic speedup assumption, something GES does not assume.
+    This heuristic speedup assumption needs to be explicitly turned on using setHeuristicSpeedup(true).
+    Also, edges to be added or remove from the graph in the forward or backward phase,
+    respectively are cached, together with the ancillary information needed to do the
+    additions or removals, to reduce rescoring.
+    A number of other optimizations were also. See code for details.
+    This class is configured to respect knowledge of forbidden and required edges,
+    including knowledge of temporal tiers.
+    For more details, see: https://www.phil.cmu.edu/tetrad-javadocs/7.6.0/edu/cmu/tetrad/search/Fges.html
 
-def _build_common_state(
-    data,
-    *,
-    n_bootstrap: int,
-    knowledge_file: str | None,
-    penalty_discount: float,
-    sem_bic_rule: int,
-    structure_prior: float,
-    singularity_lambda: float,
-    bootstrap_percent_resample_size: int,
-    bootstrap_seed: int,
-    bootstrap_add_original: bool,
-    bootstrap_with_replacement: bool,
-    bootstrap_resampling_ensemble: int,
-    verbose: bool,
-):
-    """Build shared Tetrad state for FGES and BOSS runs."""
-    _, score_, td, _, io, Params, Parameters = _load_java_modules()
-    tetrad_data = tr.pandas_data_to_tetrad(data)
-    params = Parameters()
+    :param data: Tetrad data object
+    :param params: Tetrad Parameters object
+    :param score: Tetrad score object (e.g., from score.use_sem_bic)
+    :param knowledge: Tetrad Knowledge object
+    :param symmetric_first_step: TRUE if the first step step for FGES should do scoring for both X->Y and Y->X
+    :param max_degree: Integer. The maximum degree of the graph (min = -1)
+    from different random starting permutations. The model with the most
+    optimal BIC score will be selected. Random after the first. Defaults to 1.
+    :param parallelized: TRUE if the search should be parallelized
+    :param faithfulness_assumed: TRUE if (one edge) faithfulness should be assumed
+    :returns: dict with 'graph' (Java graph object) and 'bootstrap_graphs'
 
-    params.set(Params.PENALTY_DISCOUNT, penalty_discount)
-    params.set(Params.SEM_BIC_STRUCTURE_PRIOR, structure_prior)
-    params.set(Params.SEM_BIC_RULE, sem_bic_rule)
-    params.set(Params.SINGULARITY_LAMBDA, singularity_lambda)
-    score = score_.SemBicScore()
+    :references Ramsey, J., Glymour, M., Sanchez-Romero, R., & Glymour, C. (2017). A million variables and more: the fast greedy equivalence search algorithm for learning high-dimensional graphical causal models, with an application to functional magnetic resonance images. International journal of data science and analytics, 3, 121-129.
 
-    params.set(Params.NUMBER_RESAMPLING, n_bootstrap)
-    params.set(Params.PERCENT_RESAMPLE_SIZE, bootstrap_percent_resample_size)
-    params.set(Params.ADD_ORIGINAL_DATASET, bootstrap_add_original)
-    params.set(Params.RESAMPLING_WITH_REPLACEMENT, bootstrap_with_replacement)
-    params.set(Params.RESAMPLING_ENSEMBLE, bootstrap_resampling_ensemble)
-    params.set(Params.SEED, bootstrap_seed)
-    params.set(Params.VERBOSE, verbose)
-
-    if knowledge_file:
-        know_file = io.File(knowledge_file)
-        know_delim = td.DelimiterType.WHITESPACE
-        knowledge = td.SimpleDataLoader.loadKnowledge(know_file, know_delim, "#")
-    else:
-        knowledge = td.Knowledge()
-
-    return tetrad_data, params, score, knowledge
-
-
-def run_fges_algorithm(
-    data,
-    n_bootstrap: int,
-    knowledge_file: str | None = None,
-    penalty_discount: float = 2,
-    sem_bic_rule: int = 1,
-    structure_prior: float = 0,
-    singularity_lambda: float = 0.0,
-    bootstrap_percent_resample_size: int = 90,
-    bootstrap_seed: int = 32,
-    bootstrap_add_original: bool = True,
-    bootstrap_with_replacement: bool = True,
-    bootstrap_resampling_ensemble: int = 1,
-    verbose: bool = False,
-    max_degree: int = 1000,
-    faithfulness_assumed: bool = True,
-    symmetric_first_step: bool = True,
-    parallelized: bool = False,
-):
-    """Run FGES directly from a pandas DataFrame and return elapsed, graph, and JSON."""
-    cpdag, _, _, gp, _, Params, _ = _load_java_modules()
-    tetrad_data, params, score, knowledge = _build_common_state(
-        data,
-        n_bootstrap=n_bootstrap,
-        knowledge_file=knowledge_file,
-        penalty_discount=penalty_discount,
-        sem_bic_rule=sem_bic_rule,
-        structure_prior=structure_prior,
-        singularity_lambda=singularity_lambda,
-        bootstrap_percent_resample_size=bootstrap_percent_resample_size,
-        bootstrap_seed=bootstrap_seed,
-        bootstrap_add_original=bootstrap_add_original,
-        bootstrap_with_replacement=bootstrap_with_replacement,
-        bootstrap_resampling_ensemble=bootstrap_resampling_ensemble,
-        verbose=verbose,
-    )
+"""
+def run_fges(data, params, score, knowledge, symmetric_first_step=False, max_degree=-1,
+             parallelized=False, faithfulness_assumed=False):
+    
+    alg = cpdag.Fges(score)
+    alg.setKnowledge(knowledge)
 
     params.set(Params.SYMMETRIC_FIRST_STEP, symmetric_first_step)
     params.set(Params.MAX_DEGREE, max_degree)
     params.set(Params.PARALLELIZED, parallelized)
     params.set(Params.FAITHFULNESS_ASSUMED, faithfulness_assumed)
 
-    alg = cpdag.Fges(score)
-    alg.setKnowledge(knowledge)
+    graph = alg.search(data, params)
+    bootstrap_graphs = alg.getBootstrapGraphs()
 
-    start_time = time.time()
-    graph = alg.search(tetrad_data, params)
-    elapsed = time.time() - start_time
-    graph_json = str(gp.graphToJson(graph))
-    return elapsed, graph, graph_json
+    return {"graph": graph, "bootstrap_graphs": bootstrap_graphs}
 
 
-def run_boss_algorithm(
-    data,
-    n_bootstrap: int,
-    knowledge_file: str | None = None,
-    penalty_discount: float = 2,
-    sem_bic_rule: int = 1,
-    structure_prior: float = 0,
-    singularity_lambda: float = 0.0,
-    bootstrap_percent_resample_size: int = 100,
-    bootstrap_seed: int = 32,
-    bootstrap_add_original: bool = True,
-    bootstrap_with_replacement: bool = True,
-    bootstrap_resampling_ensemble: int = 1,
-    verbose: bool = False,
-    num_starts: int = 1,
-    use_bes: bool = False,
-    time_lag: int = 0,
-    use_data_order: bool = True,
-    output_cpdag: bool = True,
-):
-    """Run BOSS directly from a pandas DataFrame and return elapsed, graph, and JSON."""
-    cpdag, _, _, gp, _, Params, _ = _load_java_modules()
-    tetrad_data, params, score, knowledge = _build_common_state(
-        data,
-        n_bootstrap=n_bootstrap,
-        knowledge_file=knowledge_file,
-        penalty_discount=penalty_discount,
-        sem_bic_rule=sem_bic_rule,
-        structure_prior=structure_prior,
-        singularity_lambda=singularity_lambda,
-        bootstrap_percent_resample_size=bootstrap_percent_resample_size,
-        bootstrap_seed=bootstrap_seed,
-        bootstrap_add_original=bootstrap_add_original,
-        bootstrap_with_replacement=bootstrap_with_replacement,
-        bootstrap_resampling_ensemble=bootstrap_resampling_ensemble,
-        verbose=verbose,
-    )
+"""
+    Algorithm BOSS
 
+    BOSS (Best Order Score Search) is an algorithm that, like GRaSP,
+    generalizes and extends the GSP (Greedy Sparsest Permutation) algorithm.
+    It has been tested to 1000 variables with an average degree of 20 and gives
+    near perfect precisions and recalls for N = 10,000
+    (with recall that drop to 0.9 for N = 1000).
+    
+    The algorithms works by building DAGs given permutations in ways similar
+    to those described in Raskutti and Uhler and Solus et al. (see references below)
+    
+    Knowledge of forbidden edges and required edges may be used with this algorithm.
+    Also, knowledge of tiers may be used. If tiered knowledge is supplied,
+    the algorithm will analyze the tiers in order, so that the time required
+    for the algorithm is linear in the number of tiers.
+    
+    For more details, see: https://www.phil.cmu.edu/tetrad-javadocs/7.4.0/edu/cmu/tetrad/search/Boss.html
+    and https://cmu-phil.github.io/tetrad/manual/#boss
+
+    :param data: Tetrad data object
+    :param params: Tetrad Parameters object
+    :param score: Tetrad score object (e.g., from score.use_sem_bic)
+    :param knowledge: Tetrad Knowledge object
+    :param num_starts: Number of random starts
+    :param use_bes: TRUE if the final BES (Backward Equivalence Search) step is
+    used from the GES (Greedy Equivalence Search) algorithm.
+    This step is needed for correctness but for large models,
+    since usually nearly all edges are oriented in the CPDAG,
+    it is heuristically not needed.
+    :param time_lag: This creates a time-series model automatically with a certain
+    number of lags. Defaults to zero.
+    :param use_data_order: TRUE just in case data variable order should be used for the first initial permutation.
+    :param output_cpdag: Whether to output CPDAG
+    :returns: dict with 'graph' (Java graph object) and 'bootstrap_graphs'
+
+    :references Dimitris Margaritis and Sebastian Thrun. Bayesian network induction via local neighborhoods. Advances in neural information processing systems, 12, 1999.
+    :references G., & Uhler, C. (2018). Learning directed acyclic graph models based on sparsest permutations. Stat, 7(1), e183.
+    :references Solus, L., Wang, Y., Matejovicova, L., & Uhler, C. (2017). Consistency guarantees for permutation-based causal inference algorithms. arXiv preprint arXiv:1702.03530.
+    :references Lam, W. Y., Andrews, B., & Ramsey, J. (2022, August). Greedy relaxations of the sparsest permutation algorithm. In Uncertainty in Artificial Intelligence (pp. 1052-1062). PMLR.
+
+"""
+def run_boss(data, params, score, knowledge, num_starts=1, use_bes=False, time_lag=0,
+             use_data_order=True, output_cpdag=True):
+    
     params.set(Params.USE_BES, use_bes)
     params.set(Params.NUM_STARTS, num_starts)
     params.set(Params.TIME_LAG, time_lag)
@@ -163,8 +122,7 @@ def run_boss_algorithm(
     alg = cpdag.Boss(score)
     alg.setKnowledge(knowledge)
 
-    start_time = time.time()
-    graph = alg.search(tetrad_data, params)
-    elapsed = time.time() - start_time
-    graph_json = str(gp.graphToJson(graph))
-    return elapsed, graph, graph_json
+    graph = alg.search(data, params)
+    bootstrap_graphs = alg.getBootstrapGraphs()
+
+    return {"graph": graph, "bootstrap_graphs": bootstrap_graphs}
