@@ -7,8 +7,8 @@
 """Graph serialization and parsing utilities.
 
 This module provides functions to convert Tetrad graph objects
-into serializable formats (e.g., JSON), parse Tetrad JSON graph
-files into tabular DataFrames, and apply edge-threshold filters.
+into serializable formats (e.g., JSON) and parse Tetrad JSON graph
+files into tabular DataFrames.
 """
 
 import json
@@ -73,56 +73,3 @@ def parse_graph(graph_filepath):
     edge_type_probabilities = pd.DataFrame(etp_rows)
 
     return {"nodes": nodes, "edgeset": edgeset, "edge_type_probabilities": edge_type_probabilities}
-
-
-def filter_null_edges(edgeset, null_prefix="nv-"):
-    """Subset edges where at least one endpoint is a null variable.
-
-    :param edgeset: DataFrame of edges (from parse_graph()['edgeset'])
-    :param null_prefix: Prefix identifying null variable names
-    :returns: DataFrame containing only edges with at least one null variable endpoint
-    """
-    is_node1_nv = edgeset["node1_name"].str.contains(null_prefix, regex=False)
-    is_node2_nv = edgeset["node2_name"].str.contains(null_prefix, regex=False)
-    return edgeset[is_node1_nv | is_node2_nv].copy()
-
-
-def add_no_edge_probability(edgeset):
-    """Add a no_edge column computed as 1 - probability.
-
-    :param edgeset: DataFrame of edges with a 'probability' column
-    :returns: DataFrame with an additional 'no_edge' column
-    """
-    out = edgeset.copy()
-    out["no_edge"] = 1 - out["probability"]
-    return out
-
-
-def pnef_threshold(edgeset, quantile=0.01):
-    """Compute the 1-PNEF threshold from null-variable edge no_edge probabilities.
-
-    The 1st percentile NoEdge Frequency (1PNEF) threshold is derived from
-    the no_edge probabilities of null-variable edges. Edges in the final
-    causal graph with no_edge probability above this threshold may have
-    formed by random chance and should be filtered out.
-
-    :param edgeset: DataFrame of null-variable edges with a 'probability' column
-    :param quantile: Quantile to use for the threshold (default 0.01 = 1st percentile)
-    :returns: float threshold value
-    """
-    with_no_edge = add_no_edge_probability(edgeset)
-    return float(with_no_edge["no_edge"].quantile(quantile))
-
-
-def apply_pnef(edgeset, pnef_value):
-    """Filter edges using the 1-PNEF threshold.
-
-    Retains only edges whose no_edge probability is at or below the
-    given PNEF threshold, removing edges that may have formed by random chance.
-
-    :param edgeset: DataFrame of edges with a 'probability' column
-    :param pnef_value: PNEF threshold value (from pnef_threshold())
-    :returns: DataFrame of edges passing the threshold filter
-    """
-    with_no_edge = add_no_edge_probability(edgeset)
-    return with_no_edge[with_no_edge["no_edge"] <= pnef_value].copy()
