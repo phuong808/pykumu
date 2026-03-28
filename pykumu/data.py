@@ -11,7 +11,7 @@ Tetrad-compatible data objects and initialize search state.
 """
 
 try:
-    import api.translate as tr
+    import pykumu.translate as tr
     import edu.cmu.tetrad.data as td
     from edu.cmu.tetrad.util import Parameters
 except ImportError:

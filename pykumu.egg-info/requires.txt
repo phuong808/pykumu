@@ -1,0 +1,9 @@
+numpy
+pandas
+JPype1
+
+[dev]
+pytest
+pdoc
+jupyterlab
+ipykernel
