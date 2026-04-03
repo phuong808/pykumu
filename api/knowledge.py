@@ -10,13 +10,6 @@ This module provides functions to load domain knowledge constraints
 (forbidden/required edges, temporal tiers) from files.
 """
 
-try:
-    import edu.cmu.tetrad.data as td
-    import java.io as io
-except ImportError:
-    pass
-
-
 def load_knowledge(path):
     """Load domain knowledge constraints from a file.
 
@@ -26,6 +19,9 @@ def load_knowledge(path):
     :param path: File path to the knowledge file
     :returns: Tetrad Knowledge object
     """
+    import edu.cmu.tetrad.data as td
+    import java.io as io
+
     know_file = io.File(path)
     know_delim = td.DelimiterType.WHITESPACE
     return td.SimpleDataLoader.loadKnowledge(know_file, know_delim, "#")

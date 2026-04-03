@@ -10,13 +10,6 @@ This module provides functions for running causal search algorithms
 (FGES, BOSS) using the Tetrad library via JPype.
 """
 
-try:
-    import edu.cmu.tetrad.algcomparison.algorithm.oracle.cpdag as cpdag
-    from edu.cmu.tetrad.util import Params
-except ImportError:
-    pass
-
-
 def run_fges(data, params, score, knowledge, symmetric_first_step=False, max_degree=-1,
              parallelized=False, faithfulness_assumed=False):
     """Implements the Fast Greedy Equivalence Search (FGES) algorithm.
@@ -60,6 +53,9 @@ def run_fges(data, params, score, knowledge, symmetric_first_step=False, max_deg
         learning high-dimensional graphical causal models, with an application to functional
         magnetic resonance images. International journal of data science and analytics, 3, 121-129.
     """
+    import edu.cmu.tetrad.algcomparison.algorithm.oracle.cpdag as cpdag
+    from edu.cmu.tetrad.util import Params
+
     alg = cpdag.Fges(score)
     alg.setKnowledge(knowledge)
 
@@ -120,6 +116,9 @@ def run_boss(data, params, score, knowledge, num_starts=1, use_bes=False, time_l
     :references: Lam, W. Y., Andrews, B., & Ramsey, J. (2022, August). Greedy relaxations of
         the sparsest permutation algorithm. In Uncertainty in Artificial Intelligence (pp. 1052-1062). PMLR.
     """
+    import edu.cmu.tetrad.algcomparison.algorithm.oracle.cpdag as cpdag
+    from edu.cmu.tetrad.util import Params
+
     params.set(Params.USE_BES, use_bes)
     params.set(Params.NUM_STARTS, num_starts)
     params.set(Params.TIME_LAG, time_lag)

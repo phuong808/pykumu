@@ -32,4 +32,4 @@ Documentation = "https://phuong808.github.io/pykumu"
 Issues = "https://github.com/sailuh/pykumu/issues"
 
 [tool.setuptools.packages.find]
-include = ["pykumu*"]
+include = ["api*"]

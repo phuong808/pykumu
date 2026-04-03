@@ -10,12 +10,6 @@ This module provides functions to configure bootstrapping (resampling)
 parameters on a Tetrad Parameters object.
 """
 
-try:
-    from edu.cmu.tetrad.util import Params
-except ImportError:
-    pass
-
-
 def set_bootstrapping(params, number_resampling=0, percent_resample_size=100, add_original_dataset=True,
                       resampling_with_replacement=True, resampling_ensemble=1, seed=-1):
     """Configure bootstrapping parameters for causal search.
@@ -29,6 +23,8 @@ def set_bootstrapping(params, number_resampling=0, percent_resample_size=100, ad
         Use any other number to not include the flag.
     :param seed: Seed for pseudorandom number generator (-1 = off)
     """
+    from edu.cmu.tetrad.util import Params
+
     params.set(Params.NUMBER_RESAMPLING, number_resampling)
     params.set(Params.PERCENT_RESAMPLE_SIZE, percent_resample_size)
     params.set(Params.ADD_ORIGINAL_DATASET, add_original_dataset)

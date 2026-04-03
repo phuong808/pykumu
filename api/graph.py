@@ -14,18 +14,14 @@ files into tabular DataFrames.
 import json
 
 import pandas as pd
-try:
-    import edu.cmu.tetrad.graph.GraphSaveLoadUtils as gp
-except ImportError:
-    pass
-
-
 def get_json(graph):
     """Convert a Tetrad graph object to a JSON string.
 
     :param graph: Tetrad Java graph object (e.g., from algorithm.run_fges()['graph'])
     :returns: JSON string representation of the graph
     """
+    import edu.cmu.tetrad.graph.GraphSaveLoadUtils as gp
+
     return str(gp.graphToJson(graph))
 
 

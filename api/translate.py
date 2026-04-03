@@ -14,14 +14,6 @@ import numpy as np
 import pandas as pd
 from pandas import DataFrame
 
-try:
-    import java.util as util
-    import edu.cmu.tetrad.data as td
-    import edu.cmu.tetrad.graph as tg
-except ImportError:
-    pass
-
-
 def pandas_data_to_tetrad(df: DataFrame, int_as_cont=False):
     """Convert a pandas DataFrame to a Tetrad-compatible BoxDataSet.
 
@@ -33,6 +25,8 @@ def pandas_data_to_tetrad(df: DataFrame, int_as_cont=False):
     :param int_as_cont: If True, treat integer columns as continuous rather than discrete
     :returns: Tetrad BoxDataSet object
     """
+    import java.util as util
+    import edu.cmu.tetrad.data as td
     dtypes = ["float16", "float32", "float64"]
     if int_as_cont:
         for i in range(3, 7):
