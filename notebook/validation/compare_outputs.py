@@ -216,7 +216,7 @@ def main():
     ]
 
     print("=" * 70)
-    print("Validation Report: R vs Python Feature Engineering Outputs")
+    print("Validation Report: R vs Python Notebook Section Outputs")
     print(f"Tolerance: {tol}")
     print("=" * 70)
     print()

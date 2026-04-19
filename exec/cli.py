@@ -15,6 +15,8 @@ USAGE:
   cli.py algorithm run-boss <jar_path> <data_path> <output_path> [options]
   cli.py graph parse help
   cli.py graph parse <graph_path> <output_dir>
+  cli.py graph convert-gui help
+  cli.py graph convert-gui <graph_path> <output_path>
   cli.py (-h | --help)
   cli.py --version
 
@@ -26,9 +28,6 @@ DESCRIPTION:
 OPTIONS:
   -h --help                                Show this screen.
   --version                                Show version.
-
-  JVM:
-  --jvm-max-heap=<heap>                    Max JVM heap size, e.g. 8g.
 
   score.use_sem_bic:
   --penalty-discount=<pd>                  Penalty discount [default: 2].
@@ -46,6 +45,9 @@ OPTIONS:
 
   knowledge.load_knowledge:
   --knowledge=<path>                       Path to a Tetrad knowledge file.
+
+  algorithm:
+  --num-threads=<nt>                       Number of threads for the search, >= 1 [default: 1].
 
   algorithm.run_fges:
   --symmetric-first-step                   Score both X->Y and Y->X in first step.
@@ -86,11 +88,8 @@ def main():
         output_path = arguments["<output_path>"]
 
         # tetrad.start()
-        jvm_args = []
-        if arguments["--jvm-max-heap"]:
-            jvm_args.append(f"-Xmx{arguments['--jvm-max-heap']}")
         print(f"tetrad.start({jar_path!r})")
-        tetrad.start(jar_path, jvm_args=jvm_args or None)
+        tetrad.start(jar_path)
 
         # data.load_continuous()
         print(f"data.load_continuous(pd.read_csv({data_path!r}))")
@@ -138,6 +137,7 @@ def main():
             max_degree=int(arguments["--max-degree"]),
             parallelized=arguments["--parallelized"],
             faithfulness_assumed=arguments["--faithfulness-assumed"],
+            num_threads=int(arguments["--num-threads"]),
         )
 
         # graph.get_json()
@@ -165,11 +165,8 @@ def main():
         output_path = arguments["<output_path>"]
 
         # tetrad.start()
-        jvm_args = []
-        if arguments["--jvm-max-heap"]:
-            jvm_args.append(f"-Xmx{arguments['--jvm-max-heap']}")
         print(f"tetrad.start({jar_path!r})")
-        tetrad.start(jar_path, jvm_args=jvm_args or None)
+        tetrad.start(jar_path)
 
         # data.load_continuous()
         print(f"data.load_continuous(pd.read_csv({data_path!r}))")
@@ -218,6 +215,7 @@ def main():
             time_lag=int(arguments["--time-lag"]),
             use_data_order=not arguments["--no-use-data-order"],
             output_cpdag=not arguments["--no-output-cpdag"],
+            num_threads=int(arguments["--num-threads"]),
         )
 
         # graph.get_json()
@@ -228,6 +226,27 @@ def main():
         with open(output_path, "w") as f:
             f.write(json_str)
         print(f"graph.get_json() -> {output_path}")
+
+    elif arguments["graph"] and arguments["convert-gui"] and arguments["help"]:
+        print("Converts a Tetrad JSON graph to Tetrad GUI format using graph.convert_to_tetrad_gui_format().")
+
+    elif arguments["graph"] and arguments["convert-gui"]:
+
+        from api import graph
+
+        graph_path = arguments["<graph_path>"]
+        output_path = arguments["<output_path>"]
+
+        # graph.convert_to_tetrad_gui_format()
+        print(f"graph.convert_to_tetrad_gui_format({graph_path!r})")
+        gui_json = graph.convert_to_tetrad_gui_format(graph_path)
+
+        output_dir = os.path.dirname(os.path.abspath(output_path))
+        if output_dir:
+            os.makedirs(output_dir, exist_ok=True)
+        with open(output_path, "w") as f:
+            f.write(gui_json)
+        print(f"  -> {output_path}")
 
     elif arguments["graph"] and arguments["parse"] and arguments["help"]:
         print("Parses a Tetrad JSON graph file into CSV tables using graph.parse_graph().")

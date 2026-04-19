@@ -1,6 +1,7 @@
 numpy
 pandas
 JPype1
+docopt
 
 [dev]
 pytest

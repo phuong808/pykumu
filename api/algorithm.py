@@ -11,7 +11,7 @@ This module provides functions for running causal search algorithms
 """
 
 def run_fges(data, params, score, knowledge, symmetric_first_step=False, max_degree=-1,
-             parallelized=False, faithfulness_assumed=False):
+             parallelized=False, faithfulness_assumed=False, num_threads=1):
     """Implements the Fast Greedy Equivalence Search (FGES) algorithm.
 
     This is an implementation of the Greedy Equivalence Search algorithm,
@@ -46,6 +46,7 @@ def run_fges(data, params, score, knowledge, symmetric_first_step=False, max_deg
         optimal BIC score will be selected. Random after the first. Defaults to 1.
     :param parallelized: TRUE if the search should be parallelized
     :param faithfulness_assumed: TRUE if (one edge) faithfulness should be assumed
+    :param num_threads: The number of threads (>= 1) to use for the search
     :returns: dict with 'graph' (Java graph object) and 'bootstrap_graphs'
 
     :references: Ramsey, J., Glymour, M., Sanchez-Romero, R., & Glymour, C. (2017).
@@ -63,6 +64,7 @@ def run_fges(data, params, score, knowledge, symmetric_first_step=False, max_deg
     params.set(Params.MAX_DEGREE, max_degree)
     params.set(Params.PARALLELIZED, parallelized)
     params.set(Params.FAITHFULNESS_ASSUMED, faithfulness_assumed)
+    params.set(Params.NUM_THREADS, num_threads)
 
     graph = alg.search(data, params)
     bootstrap_graphs = alg.getBootstrapGraphs()
@@ -71,7 +73,7 @@ def run_fges(data, params, score, knowledge, symmetric_first_step=False, max_deg
 
 
 def run_boss(data, params, score, knowledge, num_starts=1, use_bes=False, time_lag=0,
-             use_data_order=True, output_cpdag=True):
+             use_data_order=True, output_cpdag=True, num_threads=1):
     """Implements the BOSS (Best Order Score Search) algorithm.
 
     BOSS (Best Order Score Search) is an algorithm that, like GRaSP,
@@ -105,6 +107,7 @@ def run_boss(data, params, score, knowledge, num_starts=1, use_bes=False, time_l
         number of lags. Defaults to zero.
     :param use_data_order: TRUE just in case data variable order should be used for the first initial permutation.
     :param output_cpdag: Whether to output CPDAG
+    :param num_threads: The number of threads (>= 1) to use for the search
     :returns: dict with 'graph' (Java graph object) and 'bootstrap_graphs'
 
     :references: Dimitris Margaritis and Sebastian Thrun. Bayesian network induction via
@@ -124,6 +127,7 @@ def run_boss(data, params, score, knowledge, num_starts=1, use_bes=False, time_l
     params.set(Params.TIME_LAG, time_lag)
     params.set(Params.USE_DATA_ORDER, use_data_order)
     params.set(Params.OUTPUT_CPDAG, output_cpdag)
+    params.set(Params.NUM_THREADS, num_threads)
 
     alg = cpdag.Boss(score)
     alg.setKnowledge(knowledge)

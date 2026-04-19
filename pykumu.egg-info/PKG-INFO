@@ -13,6 +13,7 @@ License-File: LICENSE
 Requires-Dist: numpy
 Requires-Dist: pandas
 Requires-Dist: JPype1
+Requires-Dist: docopt
 Provides-Extra: dev
 Requires-Dist: pytest; extra == "dev"
 Requires-Dist: pdoc; extra == "dev"
