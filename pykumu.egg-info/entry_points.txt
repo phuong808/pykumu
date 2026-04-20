@@ -1,2 +1,0 @@
-[console_scripts]
-pykumu = exec.cli:main
