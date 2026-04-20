@@ -27,9 +27,9 @@ JVM and load the Tetrad JAR::
     from api import tetrad, data, score, algorithm
     tetrad.start("path/to/tetrad-current.jar")
 
-## Vignettes
+## Notebook
 
-- [Issue Causal Analysis](/api/vignettes/issue_causal_analysis.html) --
+- [Issue Causal Analysis](notebook/issue_causal_analysis.html) --
   end-to-end causal discovery workflow demonstrating data preparation,
   null-variable bootstrapped search, 1-PNEF threshold derivation,
   and final causal graph inspection.

@@ -23,12 +23,14 @@
 
             <h2>Contents</h2>
             <ul>
-  <li><a href="#vignettes">Vignettes</a></li>
+  <li><a href="#usage">Usage</a></li>
+  <li><a href="#notebook">Notebook</a></li>
 </ul>
 
 
             <h2>Submodules</h2>
             <ul>
+                    <li><a href="api/tetrad.html">tetrad</a></li>
                     <li><a href="api/algorithm.html">algorithm</a></li>
                     <li><a href="api/bootstrapping.html">bootstrapping</a></li>
                     <li><a href="api/data.html">data</a></li>
@@ -59,6 +61,7 @@ using the Tetrad library via JPype. Each module exposes thin
 wrappers around Tetrad's Java classes:</p>
 
 <ul>
+<li><code><a href="api/tetrad.html">api.tetrad</a></code> -- start the JVM and load the Tetrad JAR</li>
 <li><code><a href="api/data.html">api.data</a></code> -- load and prepare data for causal search</li>
 <li><code><a href="api/score.html">api.score</a></code> -- configure scoring functions (e.g., SEM BIC)</li>
 <li><code><a href="api/bootstrapping.html">api.bootstrapping</a></code> -- configure bootstrap resampling parameters</li>
@@ -68,10 +71,19 @@ wrappers around Tetrad's Java classes:</p>
 <li><code><a href="api/translate.html">api.translate</a></code> -- convert between pandas and Tetrad data formats</li>
 </ul>
 
-<h2 id="vignettes">Vignettes</h2>
+<h2 id="usage">Usage</h2>
+
+<p>Call <code><a href="api/tetrad.html#start">api.tetrad.start()</a></code> once before using any other module to start the
+JVM and load the Tetrad JAR::</p>
+
+<pre><code>from api import tetrad, data, score, algorithm
+tetrad.start("path/to/tetrad-current.jar")
+</code></pre>
+
+<h2 id="notebook">Notebook</h2>
 
 <ul>
-<li><a href="/pykumu/vignettes/issue_causal_analysis.html">Issue Causal Analysis</a> --
+<li><a href="notebook/issue_causal_analysis.html">Issue Causal Analysis</a> --
 end-to-end causal discovery workflow demonstrating data preparation,
 null-variable bootstrapped search, 1-PNEF threshold derivation,
 and final causal graph inspection.</li>
@@ -94,21 +106,41 @@ and final causal graph inspection.</li>
 </span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a><span class="sd">using the Tetrad library via JPype. Each module exposes thin</span>
 </span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a><span class="sd">wrappers around Tetrad&#39;s Java classes:</span>
 </span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a>
-</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a><span class="sd">- `api.data` -- load and prepare data for causal search</span>
-</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a><span class="sd">- `api.score` -- configure scoring functions (e.g., SEM BIC)</span>
-</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a><span class="sd">- `api.bootstrapping` -- configure bootstrap resampling parameters</span>
-</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a><span class="sd">- `api.knowledge` -- load domain knowledge constraints</span>
-</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a><span class="sd">- `api.algorithm` -- run causal search algorithms (FGES, BOSS)</span>
-</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a><span class="sd">- `api.graph` -- serialize and parse Tetrad graph objects, apply PNEF thresholds</span>
-</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a><span class="sd">- `api.translate` -- convert between pandas and Tetrad data formats</span>
-</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a>
-</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a><span class="sd">## Vignettes</span>
-</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a>
-</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a><span class="sd">- [Issue Causal Analysis](/pykumu/vignettes/issue_causal_analysis.html) --</span>
-</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a><span class="sd">  end-to-end causal discovery workflow demonstrating data preparation,</span>
-</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a><span class="sd">  null-variable bootstrapped search, 1-PNEF threshold derivation,</span>
-</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a><span class="sd">  and final causal graph inspection.</span>
-</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a><span class="sd">- `api.tetrad` -- start the JVM and load the Tetrad JAR</span>
+</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a><span class="sd">- `api.data` -- load and prepare data for causal search</span>
+</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a><span class="sd">- `api.score` -- configure scoring functions (e.g., SEM BIC)</span>
+</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a><span class="sd">- `api.bootstrapping` -- configure bootstrap resampling parameters</span>
+</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a><span class="sd">- `api.knowledge` -- load domain knowledge constraints</span>
+</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a><span class="sd">- `api.algorithm` -- run causal search algorithms (FGES, BOSS)</span>
+</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a><span class="sd">- `api.graph` -- serialize and parse Tetrad graph objects, apply PNEF thresholds</span>
+</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a><span class="sd">- `api.translate` -- convert between pandas and Tetrad data formats</span>
+</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a>
+</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a><span class="sd">## Usage</span>
+</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a>
+</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a><span class="sd">Call `api.tetrad.start()` once before using any other module to start the</span>
+</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a><span class="sd">JVM and load the Tetrad JAR::</span>
+</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a>
+</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a><span class="sd">    from api import tetrad, data, score, algorithm</span>
+</span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a><span class="sd">    tetrad.start(&quot;path/to/tetrad-current.jar&quot;)</span>
+</span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a>
+</span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a><span class="sd">## Notebook</span>
+</span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a>
+</span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a><span class="sd">- [Issue Causal Analysis](notebook/issue_causal_analysis.html) --</span>
+</span><span id="L-33"><a href="#L-33"><span class="linenos">33</span></a><span class="sd">  end-to-end causal discovery workflow demonstrating data preparation,</span>
+</span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a><span class="sd">  null-variable bootstrapped search, 1-PNEF threshold derivation,</span>
+</span><span id="L-35"><a href="#L-35"><span class="linenos">35</span></a><span class="sd">  and final causal graph inspection.</span>
+</span><span id="L-36"><a href="#L-36"><span class="linenos">36</span></a><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-37"><a href="#L-37"><span class="linenos">37</span></a>
+</span><span id="L-38"><a href="#L-38"><span class="linenos">38</span></a><span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+</span><span id="L-39"><a href="#L-39"><span class="linenos">39</span></a>    <span class="s2">&quot;tetrad&quot;</span><span class="p">,</span>
+</span><span id="L-40"><a href="#L-40"><span class="linenos">40</span></a>    <span class="s2">&quot;algorithm&quot;</span><span class="p">,</span>
+</span><span id="L-41"><a href="#L-41"><span class="linenos">41</span></a>    <span class="s2">&quot;bootstrapping&quot;</span><span class="p">,</span>
+</span><span id="L-42"><a href="#L-42"><span class="linenos">42</span></a>    <span class="s2">&quot;data&quot;</span><span class="p">,</span>
+</span><span id="L-43"><a href="#L-43"><span class="linenos">43</span></a>    <span class="s2">&quot;graph&quot;</span><span class="p">,</span>
+</span><span id="L-44"><a href="#L-44"><span class="linenos">44</span></a>    <span class="s2">&quot;knowledge&quot;</span><span class="p">,</span>
+</span><span id="L-45"><a href="#L-45"><span class="linenos">45</span></a>    <span class="s2">&quot;score&quot;</span><span class="p">,</span>
+</span><span id="L-46"><a href="#L-46"><span class="linenos">46</span></a>    <span class="s2">&quot;translate&quot;</span><span class="p">,</span>
+</span><span id="L-47"><a href="#L-47"><span class="linenos">47</span></a><span class="p">]</span>
 </span></pre></div>
 
 

@@ -9,16 +9,16 @@
 """Command-line access to the pykumu api package for causal analysis.
 
 USAGE:
-  cli.py algorithm run-fges help
-  cli.py algorithm run-fges <jar_path> <data_path> <output_path> [options]
-  cli.py algorithm run-boss help
-  cli.py algorithm run-boss <jar_path> <data_path> <output_path> [options]
-  cli.py graph parse help
-  cli.py graph parse <graph_path> <output_dir>
-  cli.py graph convert-gui help
-  cli.py graph convert-gui <graph_path> <output_path>
-  cli.py (-h | --help)
-  cli.py --version
+  causal.py algorithm run-fges help
+  causal.py algorithm run-fges <jar_path> <data_path> <output_path> [options]
+  causal.py algorithm run-boss help
+  causal.py algorithm run-boss <jar_path> <data_path> <output_path> [options]
+  causal.py graph parse help
+  causal.py graph parse <graph_path> <output_dir>
+  causal.py graph convert-gui help
+  causal.py graph convert-gui <graph_path> <output_path>
+  causal.py (-h | --help)
+  causal.py --version
 
 DESCRIPTION:
   Provides command-line access to the pykumu api package for causal
@@ -63,10 +63,20 @@ OPTIONS:
   --no-output-cpdag                        Do not output CPDAG.
 """
 
+
 import os
 import sys
 
+import pandas as pd
 from docopt import docopt
+
+# Make the repo root importable so `from api import ...` works when running
+# this script directly (e.g. `python exec/causal.py ...`) without `pip install`.
+_REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
+if _REPO_ROOT not in sys.path:
+    sys.path.insert(0, _REPO_ROOT)
+
+from api import tetrad, data, score, bootstrapping, knowledge, algorithm, graph
 
 
 def main():
@@ -79,9 +89,6 @@ def main():
         print("       algorithm.run_fges(), graph.get_json().")
 
     elif arguments["algorithm"] and arguments["run-fges"]:
-
-        import pandas as pd
-        from api import tetrad, data, score, bootstrapping, knowledge, algorithm, graph
 
         jar_path = arguments["<jar_path>"]
         data_path = arguments["<data_path>"]
@@ -157,9 +164,6 @@ def main():
 
     elif arguments["algorithm"] and arguments["run-boss"]:
 
-        import pandas as pd
-        from api import tetrad, data, score, bootstrapping, knowledge, algorithm, graph
-
         jar_path = arguments["<jar_path>"]
         data_path = arguments["<data_path>"]
         output_path = arguments["<output_path>"]
@@ -232,8 +236,6 @@ def main():
 
     elif arguments["graph"] and arguments["convert-gui"]:
 
-        from api import graph
-
         graph_path = arguments["<graph_path>"]
         output_path = arguments["<output_path>"]
 
@@ -252,8 +254,6 @@ def main():
         print("Parses a Tetrad JSON graph file into CSV tables using graph.parse_graph().")
 
     elif arguments["graph"] and arguments["parse"]:
-
-        from api import graph
 
         graph_path = arguments["<graph_path>"]
         output_dir = arguments["<output_dir>"]

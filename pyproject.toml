@@ -27,13 +27,10 @@ dev = [
     "ipykernel",
 ]
 
-[project.scripts]
-pykumu = "exec.cli:main"
-
 [project.urls]
 Homepage = "https://github.com/sailuh/pykumu"
 Documentation = "https://phuong808.github.io/pykumu"
 Issues = "https://github.com/sailuh/pykumu/issues"
 
 [tool.setuptools.packages.find]
-include = ["api*", "exec*"]
+include = ["api*"]
