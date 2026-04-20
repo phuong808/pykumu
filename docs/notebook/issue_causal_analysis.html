@@ -7807,6 +7807,83 @@ a.anchor-link {
 </div>
 </div>
 </div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=4c545b9f">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h2 id="Setup">Setup<a class="anchor-link" href="#Setup">¶</a></h2><h3 id="1.-Prerequisites">1. Prerequisites<a class="anchor-link" href="#1.-Prerequisites">¶</a></h3><p>Install these first:</p>
+<ul>
+<li><strong>Miniconda</strong> — <a href="https://docs.conda.io/en/latest/miniconda.html">docs.conda.io/en/latest/miniconda.html</a></li>
+<li><strong>JDK 21</strong> (Amazon Corretto 21) — <a href="https://github.com/cmu-phil/tetrad/wiki/Setting-up-Java-for-Tetrad">github.com/cmu-phil/tetrad/wiki/Setting-up-Java-for-Tetrad</a></li>
+</ul>
+<p>Make sure <code>JAVA_HOME</code> points at the JDK 21 install and that <code>java -version</code> prints <code>21.x</code>.</p>
+<h3 id="2.-Create-the-environment">2. Create the environment<a class="anchor-link" href="#2.-Create-the-environment">¶</a></h3><p>From the repo root:</p>
+<div class="highlight"><pre><span></span>conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>env.yml
+conda<span class="w"> </span>activate<span class="w"> </span>pykumu
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+</pre></div>
+<h3 id="3.-Resources">3. Resources<a class="anchor-link" href="#3.-Resources">¶</a></h3><p>Make sure the required files are in <code>notebook/resources/</code>:</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tetrad-current.jar</code></td>
+<td>Tetrad library</td>
+</tr>
+<tr>
+<td><code>knowledge_box.txt</code></td>
+<td>Domain-knowledge constraints</td>
+</tr>
+<tr>
+<td><code>null_variable_dt.csv</code></td>
+<td>Input data</td>
+</tr>
+</tbody>
+</table>
+<h3 id="4.-Run-the-notebook">4. Run the notebook<a class="anchor-link" href="#4.-Run-the-notebook">¶</a></h3><p>Pick whichever matches how you work:</p>
+<p><strong>VS Code</strong> (requires the <code>ms-python.python</code> and <code>ms-toolsai.jupyter</code> extensions)</p>
+<ol>
+<li>Open <code>notebook/issue_causal_analysis.ipynb</code> in VS Code.</li>
+<li>Click the kernel picker (top-right of the notebook) and select the <strong><code>pykumu</code></strong> conda environment.</li>
+<li>Click <strong>Run All</strong>.</li>
+</ol>
+<p><strong>JupyterLab / Jupyter Notebook in a browser</strong></p>
+<p>From the repo root:</p>
+<div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>notebook
+jupyter<span class="w"> </span>lab<span class="w"> </span>issue_causal_analysis.ipynb
+</pre></div>
+<p>In the browser: <strong>Kernel → Change Kernel → <code>pykumu</code></strong>, then <strong>Run → Run All Cells</strong>.</p>
+<p><strong>Headless (command line, no UI)</strong></p>
+<p>From the repo root:</p>
+<div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>notebook
+jupyter<span class="w"> </span>nbconvert<span class="w"> </span>--to<span class="w"> </span>notebook<span class="w"> </span>--execute<span class="w"> </span>issue_causal_analysis.ipynb<span class="w"> </span>--inplace
+</pre></div>
+<blockquote>
+<p>⚠️ In all three cases you must be in the <code>notebook/</code> directory (or have it as the working directory), otherwise the notebook can't find <code>resources/</code> or write to <code>pykumu_outputs/</code>.</p>
+</blockquote>
+<blockquote>
+<p>⚠️ If the causal search runs fail or hang, make sure the <code>num_threads</code> parameter on <code>algorithm.run_boss</code> / <code>algorithm.run_fges</code> is set to <code>5</code>.</p>
+</blockquote>
+<h3 id="5.-Verify-Outputs">5. Verify Outputs<a class="anchor-link" href="#5.-Verify-Outputs">¶</a></h3><ul>
+<li><code>pykumu_outputs/</code> — intermediate CSVs and search graphs (<code>null_search_graph.json</code>, <code>domain_search_graph.json</code>).</li>
+<li><code>causal_graph/</code> — interactive HTMLs (<code>causal_graph_full.html</code>, <code>causal_graph_subgraph.html</code>).</li>
+</ul>
+<h3 id="6.-Output-Comparison-with-Kumu">6. Output Comparison with Kumu<a class="anchor-link" href="#6.-Output-Comparison-with-Kumu">¶</a></h3><p>The R-notebook outputs are already committed under <code>notebook/kumu_outputs/</code>. Once step 4 has populated <code>notebook/pykumu_outputs/</code>, run the comparison.</p>
+<p>From the repo root:</p>
+<div class="highlight"><pre><span></span>python3<span class="w"> </span>notebook/validation/compare_outputs.py
+</pre></div>
+<p>Reports PASS/FAIL per section.</p>
+</div>
+</div>
+</div>
+</div>
 <div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=ce5b4897">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
@@ -7822,38 +7899,31 @@ a.anchor-link {
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [1]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [609]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Start the JVM and load tetrad-current.jar, then import all required packages.</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">jpype</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">jpype.imports</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">igraph</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">rankdata</span><span class="p">,</span> <span class="n">norm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyvis.network</span><span class="w"> </span><span class="kn">import</span> <span class="n">Network</span>
 
-<span class="c1"># Add repo root to path so we can import from api/</span>
+<span class="c1"># Add repo root to path so we can import api</span>
 <span class="n">_repo_root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">'..'</span><span class="p">))</span>
 <span class="k">if</span> <span class="n">_repo_root</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
     <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">_repo_root</span><span class="p">)</span>
 
-<span class="n">jar_path</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"resources/tetrad-current.jar"</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">api</span><span class="w"> </span><span class="kn">import</span> <span class="n">tetrad</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">score</span><span class="p">,</span> <span class="n">bootstrapping</span><span class="p">,</span> <span class="n">algorithm</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">knowledge</span><span class="p">,</span> <span class="n">translate</span>
+<span class="n">tetrad</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="s2">"resources/tetrad-current.jar"</span><span class="p">)</span>
 
-<span class="k">if</span> <span class="ow">not</span> <span class="n">jpype</span><span class="o">.</span><span class="n">isJVMStarted</span><span class="p">():</span>
-    <span class="n">jpype</span><span class="o">.</span><span class="n">startJVM</span><span class="p">(</span><span class="n">jpype</span><span class="o">.</span><span class="n">getDefaultJVMPath</span><span class="p">(),</span> <span class="n">classpath</span><span class="o">=</span><span class="p">[</span><span class="n">jar_path</span><span class="p">])</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"JVM started with jar: </span><span class="si">{</span><span class="n">jar_path</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-<span class="k">else</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">"JVM already running — if the jar path was wrong, restart the kernel and re-run."</span><span class="p">)</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">api</span><span class="w"> </span><span class="kn">import</span> <span class="n">data</span> <span class="k">as</span> <span class="n">data</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">api</span><span class="w"> </span><span class="kn">import</span> <span class="n">score</span> <span class="k">as</span> <span class="n">score</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">api</span><span class="w"> </span><span class="kn">import</span> <span class="n">bootstrapping</span> <span class="k">as</span> <span class="n">bootstrapping</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">api</span><span class="w"> </span><span class="kn">import</span> <span class="n">algorithm</span> <span class="k">as</span> <span class="n">algorithm</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">api</span><span class="w"> </span><span class="kn">import</span> <span class="n">graph</span> <span class="k">as</span> <span class="n">graph</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">api</span><span class="w"> </span><span class="kn">import</span> <span class="n">knowledge</span> <span class="k">as</span> <span class="n">knowledge</span>
+<span class="n">py_output_dir</span> <span class="o">=</span> <span class="s2">"pykumu_outputs"</span>
+<span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">py_output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -7865,8 +7935,9 @@ a.anchor-link {
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>JVM started with jar: resources/tetrad-current.jar
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre>/var/folders/qg/19_8zd9x78b4fcgq8j_d8jmc0000gn/T/ipykernel_91586/4034018956.py:19: UserWarning: JVM is already running. tetrad.start() has no effect after the first call — restart the Python process to change the JAR.
+  tetrad.start("resources/tetrad-current.jar")
 </pre>
 </div>
 </div>
@@ -7888,7 +7959,7 @@ a.anchor-link {
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [2]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [610]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># dt = pd.read_csv("~/causal_tse/causal_modelling/1_openssl_social_smells_timeline.csv")</span>
@@ -7915,7 +7986,7 @@ a.anchor-link {
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [3]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [611]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="k">if</span> <span class="s1">'cve_id'</span> <span class="ow">in</span> <span class="n">dt</span><span class="o">.</span><span class="n">columns</span> <span class="ow">and</span> <span class="n">dt</span><span class="p">[</span><span class="s1">'cve_id'</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">object</span><span class="p">:</span>
@@ -7959,7 +8030,7 @@ a.anchor-link {
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [4]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [612]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="k">if</span> <span class="s1">'commit_interval'</span> <span class="ow">in</span> <span class="n">dt</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
@@ -8002,7 +8073,7 @@ a.anchor-link {
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [5]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [613]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">rename_map</span> <span class="o">=</span> <span class="p">{</span>
@@ -8028,6 +8099,8 @@ a.anchor-link {
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Selected columns: </span><span class="si">{</span><span class="n">available_cols</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">"Skipped feature renaming (columns already renamed or missing)."</span><span class="p">)</span>
+
+<span class="n">dt</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">py_output_dir</span><span class="p">,</span> <span class="s2">"feature_renaming.csv"</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -8062,7 +8135,7 @@ a.anchor-link {
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [6]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [614]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="k">if</span> <span class="s1">'start'</span> <span class="ow">in</span> <span class="n">dt</span><span class="o">.</span><span class="n">columns</span> <span class="ow">and</span> <span class="n">dt</span><span class="p">[</span><span class="s1">'start'</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">object</span><span class="p">:</span>
@@ -8105,14 +8178,16 @@ a.anchor-link {
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [7]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [615]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="k">if</span> <span class="n">dt</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">any</span><span class="p">()</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
     <span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">"Applied fillna(0) — missing values found and filled."</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Applied fillna(0) â€” missing values found and filled."</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">"Skipped fillna (no missing values found)."</span><span class="p">)</span>
+
+<span class="n">dt</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">py_output_dir</span><span class="p">,</span> <span class="s2">"missing_data_handling.csv"</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -8147,7 +8222,7 @@ a.anchor-link {
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [8]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [616]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="k">if</span> <span class="s1">'start'</span> <span class="ow">in</span> <span class="n">dt</span><span class="o">.</span><span class="n">columns</span> <span class="ow">and</span> <span class="n">pd</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">is_datetime64_any_dtype</span><span class="p">(</span><span class="n">dt</span><span class="p">[</span><span class="s1">'start'</span><span class="p">]):</span>
@@ -8155,6 +8230,8 @@ a.anchor-link {
     <span class="nb">print</span><span class="p">(</span><span class="s2">"Converted start to Unix timestamp."</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">"Skipped start conversion (already numeric or missing)."</span><span class="p">)</span>
+
+<span class="n">dt</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">py_output_dir</span><span class="p">,</span> <span class="s2">"feature_engineering.csv"</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -8189,7 +8266,7 @@ a.anchor-link {
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [9]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [617]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">lag_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"org_silo"</span><span class="p">,</span> <span class="s2">"mis_link"</span><span class="p">,</span> <span class="s2">"silence"</span><span class="p">,</span> <span class="s2">"code_dev"</span><span class="p">,</span> <span class="s2">"file"</span><span class="p">,</span>
@@ -8215,7 +8292,7 @@ a.anchor-link {
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [10]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [618]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="k">if</span> <span class="s1">'cve_id'</span> <span class="ow">in</span> <span class="n">dt</span><span class="o">.</span><span class="n">columns</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'2'</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">dt</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'activity_2'</span><span class="p">]):</span>
@@ -8227,6 +8304,8 @@ a.anchor-link {
 <span class="k">else</span><span class="p">:</span>
     <span class="n">lag_dt</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">"Skipped time lag (lag columns already present or cve_id missing)."</span><span class="p">)</span>
+
+<span class="n">lag_dt</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">py_output_dir</span><span class="p">,</span> <span class="s2">"time_lag_features.csv"</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -8261,7 +8340,7 @@ a.anchor-link {
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [11]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [619]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="k">if</span> <span class="s1">'cve_id'</span> <span class="ow">in</span> <span class="n">lag_dt</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
@@ -8274,6 +8353,8 @@ a.anchor-link {
 <span class="k">else</span><span class="p">:</span>
     <span class="n">short_cves</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"cve_id"</span><span class="p">,</span> <span class="s2">"n_rows"</span><span class="p">])</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">"Skipped short CVE detection (cve_id column missing)."</span><span class="p">)</span>
+
+<span class="n">short_cves</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">py_output_dir</span><span class="p">,</span> <span class="s2">"short_cves.csv"</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -8297,7 +8378,7 @@ a.anchor-link {
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [12]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [620]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="k">if</span> <span class="s1">'cve_id'</span> <span class="ow">in</span> <span class="n">lag_dt</span><span class="o">.</span><span class="n">columns</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">short_cves</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -8340,7 +8421,7 @@ a.anchor-link {
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [13]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [621]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">cor_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"org_silo"</span><span class="p">,</span> <span class="s2">"mis_link"</span><span class="p">,</span> <span class="s2">"silence"</span><span class="p">,</span> <span class="s2">"code_dev"</span><span class="p">,</span> <span class="s2">"file"</span><span class="p">,</span>
@@ -8354,6 +8435,10 @@ a.anchor-link {
     <span class="n">cor_table</span><span class="o">.</span><span class="n">corr</span><span class="p">()</span>
 <span class="k">else</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">"Skipped correlation analysis (columns not present)."</span><span class="p">)</span>
+
+<span class="n">cor_matrix</span> <span class="o">=</span> <span class="n">lag_dt</span><span class="p">[</span><span class="n">available_cor_cols</span><span class="p">]</span><span class="o">.</span><span class="n">corr</span><span class="p">()</span>
+<span class="n">cor_matrix</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">"rn"</span><span class="p">,</span> <span class="n">cor_matrix</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+<span class="n">cor_matrix</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">py_output_dir</span><span class="p">,</span> <span class="s2">"correlation_matrix.csv"</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -8375,7 +8460,7 @@ a.anchor-link {
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [14]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [622]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">keep_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"cve_id"</span><span class="p">,</span> <span class="s2">"start"</span><span class="p">,</span> <span class="s2">"mis_link"</span><span class="p">,</span> <span class="s2">"silence"</span><span class="p">,</span> <span class="s2">"code_dev"</span><span class="p">,</span> <span class="s2">"file"</span><span class="p">,</span>
@@ -8423,7 +8508,7 @@ a.anchor-link {
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [15]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [623]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">npn</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
@@ -8443,6 +8528,8 @@ a.anchor-link {
 <span class="k">else</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">"Skipped non-paranormal transformation (data already transformed)."</span><span class="p">)</span>
     <span class="n">lag_dt</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+
+<span class="n">lag_dt</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">py_output_dir</span><span class="p">,</span> <span class="s2">"npn_transformed.csv"</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -8477,7 +8564,7 @@ a.anchor-link {
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [16]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [624]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="k">if</span> <span class="s1">'cve_id'</span> <span class="ow">in</span> <span class="n">lag_dt</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
@@ -8493,7 +8580,10 @@ a.anchor-link {
     <span class="nb">print</span><span class="p">(</span><span class="s2">"Applied CVE binarization."</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
     <span class="n">binarize_cve_id</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">"Skipped CVE binarization (cve_id column missing — data already binarized)."</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Skipped CVE binarization (cve_id column missing â€” data already binarized)."</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">binarize_cve_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">lag_dt</span><span class="p">[[</span><span class="s2">"cve_id"</span><span class="p">]]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">binarize_cve_id</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">py_output_dir</span><span class="p">,</span> <span class="s2">"binarized_cve_indicators.csv"</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -8506,7 +8596,7 @@ a.anchor-link {
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>Skipped CVE binarization (cve_id column missing — data already binarized).
+<pre>Skipped CVE binarization (cve_id column missing â€” data already binarized).
 </pre>
 </div>
 </div>
@@ -8528,7 +8618,7 @@ a.anchor-link {
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [17]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [625]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="k">if</span> <span class="n">binarize_cve_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -8539,10 +8629,12 @@ a.anchor-link {
     <span class="n">binarized_lag_dt</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">lag_dt</span><span class="p">,</span> <span class="n">binarize_cve_id</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="s2">"id"</span><span class="p">)],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">"Applied cve_id removal and binary column concatenation."</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="c1"># Data already has binarized columns — extract non-nv columns as binarized_lag_dt</span>
+    <span class="c1"># Data already has binarized columns â€” extract non-nv columns as binarized_lag_dt</span>
     <span class="n">nv_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">lag_dt</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"nv-"</span><span class="p">)]</span>
     <span class="n">binarized_lag_dt</span> <span class="o">=</span> <span class="n">lag_dt</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">nv_cols</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s1">'ignore'</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">"Skipped — using existing binarized columns from loaded data."</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Skipped â€” using existing binarized columns from loaded data."</span><span class="p">)</span>
+
+<span class="n">binarized_lag_dt</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">py_output_dir</span><span class="p">,</span> <span class="s2">"binarized_lag_dt.csv"</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -8555,7 +8647,7 @@ a.anchor-link {
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>Skipped — using existing binarized columns from loaded data.
+<pre>Skipped â€” using existing binarized columns from loaded data.
 </pre>
 </div>
 </div>
@@ -8577,7 +8669,7 @@ a.anchor-link {
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [18]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [626]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"nv-"</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">lag_dt</span><span class="o">.</span><span class="n">columns</span><span class="p">):</span>
@@ -8626,7 +8718,7 @@ a.anchor-link {
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [19]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [627]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="k">if</span> <span class="n">nv_lag_dt</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">138</span><span class="p">:</span>
@@ -8639,6 +8731,8 @@ a.anchor-link {
 <span class="n">nv_lag_dt</span> <span class="o">=</span> <span class="n">nv_lag_dt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
 <span class="n">binarized_lag_dt</span> <span class="o">=</span> <span class="n">binarized_lag_dt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Converted nv_lag_dt and binarized_lag_dt to float."</span><span class="p">)</span>
+
+<span class="n">nv_lag_dt</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">py_output_dir</span><span class="p">,</span> <span class="s2">"nv_lag_dt_final.csv"</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -8685,11 +8779,11 @@ Converted nv_lag_dt and binarized_lag_dt to float.
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [20]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [628]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Output path configuration (for saving results later if needed)</span>
-<span class="n">output_folder_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s2">"processed_data"</span><span class="p">)</span>
+<span class="n">output_folder_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s2">"null_search"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -8708,7 +8802,7 @@ Converted nv_lag_dt and binarized_lag_dt to float.
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=787b1700">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=787b1700">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8725,7 +8819,7 @@ Converted nv_lag_dt and binarized_lag_dt to float.
 
     <span class="n">state</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">load_continuous</span><span class="p">(</span><span class="n">nv_lag_dt</span><span class="p">)</span>
     <span class="n">sem_bic</span> <span class="o">=</span> <span class="n">score</span><span class="o">.</span><span class="n">use_sem_bic</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s2">"params"</span><span class="p">],</span> <span class="n">penalty_discount</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sem_bic_structure_prior</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sem_bic_rule</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">bootstrapping</span><span class="o">.</span><span class="n">set_bootstrapping</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s2">"params"</span><span class="p">],</span> <span class="n">number_resampling</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+    <span class="n">bootstrapping</span><span class="o">.</span><span class="n">set_bootstrapping</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s2">"params"</span><span class="p">],</span> <span class="n">number_resampling</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
                                     <span class="n">percent_resample_size</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
                                     <span class="n">add_original_dataset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">resampling_with_replacement</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                                     <span class="n">resampling_ensemble</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -8738,9 +8832,35 @@ Converted nv_lag_dt and binarized_lag_dt to float.
     <span class="n">fges_null_graph_json</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">get_json</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">"graph"</span><span class="p">])</span>
     <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_folder_path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">fges_null_graph_json</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">convert_to_tetrad_gui_format</span><span class="p">(</span><span class="n">fges_null_graph_json</span><span class="p">))</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"FGES null search graph saved to: </span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">eval_fges</span><span class="p">:</span>
+    <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">py_output_dir</span><span class="p">,</span> <span class="s2">"null_search_graph.json"</span><span class="p">))</span>
 </pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>Bootstrap count = 1
+Bootstrap count = 2
+Bootstrap count = 3
+Bootstrap count = 4
+Bootstrap count = 5
+Bootstrap count = 6
+Bootstrap count = 7
+Bootstrap count = 8
+Bootstrap count = 9
+Bootstrap count = 10
+FGES null search graph saved to: /Users/phuonghuupham/pykumu/notebook/null_search/fges_bootstrap_null_search_500_runs_nv_binary_indicators_graph.json
+</pre>
 </div>
 </div>
 </div>
@@ -8756,12 +8876,12 @@ Converted nv_lag_dt and binarized_lag_dt to float.
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=b01f7ac1">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=b01f7ac1">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [630]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Set eval_boss = True to run, False to skip</span>
@@ -8773,7 +8893,7 @@ Converted nv_lag_dt and binarized_lag_dt to float.
 
     <span class="n">state</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">load_continuous</span><span class="p">(</span><span class="n">nv_lag_dt</span><span class="p">)</span>
     <span class="n">sem_bic</span> <span class="o">=</span> <span class="n">score</span><span class="o">.</span><span class="n">use_sem_bic</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s2">"params"</span><span class="p">],</span> <span class="n">penalty_discount</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sem_bic_structure_prior</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sem_bic_rule</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">bootstrapping</span><span class="o">.</span><span class="n">set_bootstrapping</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s2">"params"</span><span class="p">],</span> <span class="n">number_resampling</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+    <span class="n">bootstrapping</span><span class="o">.</span><span class="n">set_bootstrapping</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s2">"params"</span><span class="p">],</span> <span class="n">number_resampling</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
                                     <span class="n">percent_resample_size</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
                                     <span class="n">add_original_dataset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">resampling_with_replacement</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                                     <span class="n">resampling_ensemble</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -8786,22 +8906,12 @@ Converted nv_lag_dt and binarized_lag_dt to float.
     <span class="n">boss_null_graph_json</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">get_json</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">"graph"</span><span class="p">])</span>
     <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_folder_path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">boss_null_graph_json</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">convert_to_tetrad_gui_format</span><span class="p">(</span><span class="n">boss_null_graph_json</span><span class="p">))</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"BOSS null search graph saved to: </span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">eval_boss</span><span class="p">:</span>
+    <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">py_output_dir</span><span class="p">,</span> <span class="s2">"null_search_graph.json"</span><span class="p">))</span>
 </pre></div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell-outputWrapper">
-<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
-</div>
-<div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>BOSS null search graph saved to: c:\Users\phuon\OneDrive\Documents\GitHub\pykumu\vignettes\processed_data\boss_bootstrap_null_search_1000_runs_nv_binary_indicators_graph.json
-</pre>
 </div>
 </div>
 </div>
@@ -8834,11 +8944,13 @@ Converted nv_lag_dt and binarized_lag_dt to float.
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [631]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">parsed_graph</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">parse_graph</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
 <span class="n">parsed_graph</span><span class="p">[</span><span class="s2">"nodes"</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+
+<span class="n">parsed_graph</span><span class="p">[</span><span class="s2">"nodes"</span><span class="p">]</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">py_output_dir</span><span class="p">,</span> <span class="s2">"null_search_nodes.csv"</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -8855,15 +8967,100 @@ Converted nv_lag_dt and binarized_lag_dt to float.
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=7b3446be">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=7b3446be">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [24]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [632]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">parsed_graph</span><span class="p">[</span><span class="s2">"edgeset"</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+
+<span class="n">parsed_graph</span><span class="p">[</span><span class="s2">"edgeset"</span><span class="p">]</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">py_output_dir</span><span class="p">,</span> <span class="s2">"null_search_edgeset.csv"</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=37da5df8">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<p>Lastly, we can examine the counts of each type of edge formed on each subgraph via the edge_type_probabilities table. Since the edgeset table probability already sums the probabilities from this table for every node pair, this information is presented here only for qualitative inspection, but it is not currently used in the subsequent steps.</p>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=cf5fd813">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [633]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">parsed_graph</span><span class="p">[</span><span class="s2">"edge_type_probabilities"</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+
+<span class="n">parsed_graph</span><span class="p">[</span><span class="s2">"edge_type_probabilities"</span><span class="p">]</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">py_output_dir</span><span class="p">,</span> <span class="s2">"null_search_edge_type_probabilities.csv"</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=60cf9cb5">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h3 id="Deriving-1-PNEF">Deriving 1 PNEF<a class="anchor-link" href="#Deriving-1-PNEF">¶</a></h3><p>As noted, our interest is to derive a threshold for the final causal search, using the information of this bootstrapped null feature causal search between the actual variables, and the random features. By this randome dge definition, our first step is to subset the <code>edgeset</code>table  to contain only the edge pairs that include null variables. A sample is shown below of the table where at least one of the two nodes is nv:</p>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=74e4258d">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [634]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">is_node1_nv</span> <span class="o">=</span> <span class="n">parsed_graph</span><span class="p">[</span><span class="s2">"edgeset"</span><span class="p">][</span><span class="s2">"node1_name"</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s2">"nv-"</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">is_node2_nv</span> <span class="o">=</span> <span class="n">parsed_graph</span><span class="p">[</span><span class="s2">"edgeset"</span><span class="p">][</span><span class="s2">"node2_name"</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s2">"nv-"</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">nv_edges</span> <span class="o">=</span> <span class="n">parsed_graph</span><span class="p">[</span><span class="s2">"edgeset"</span><span class="p">][</span><span class="n">is_node1_nv</span> <span class="o">|</span> <span class="n">is_node2_nv</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">nv_edges</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+
+<span class="n">nv_edges</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">py_output_dir</span><span class="p">,</span> <span class="s2">"nv_edges.csv"</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=84295370">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<p>Next, we can derive a no_edge probability by subtracting 1 from the <code>probability</code> value.</p>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=fc9a6c92">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [635]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">nv_edges</span><span class="p">[</span><span class="s2">"no_edge"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">nv_edges</span><span class="p">[</span><span class="s2">"probability"</span><span class="p">]</span>
+<span class="n">nv_edges</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -8874,7 +9071,7 @@ Converted nv_lag_dt and binarized_lag_dt to float.
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child jp-OutputArea-executeResult">
-<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[24]:</div>
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[635]:</div>
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
 <div>
 <style scoped="">
@@ -8902,224 +9099,49 @@ Converted nv_lag_dt and binarized_lag_dt to float.
 <th>highlighted</th>
 <th>properties</th>
 <th>probability</th>
+<th>no_edge</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <th>0</th>
-<td>start</td>
-<td>b_160705</td>
+<td>b_62937</td>
+<td>nv-b_102939</td>
 <td>TAIL</td>
 <td>ARROW</td>
 <td>False</td>
 <td>False</td>
-<td>NaN</td>
-<td>0.725490</td>
+<td>pd;pl</td>
+<td>0.636364</td>
+<td>0.363636</td>
 </tr>
 <tr>
-<th>1</th>
-<td>silence</td>
-<td>mail_dev</td>
+<th>13</th>
+<td>b_122110</td>
+<td>nv-b_103864</td>
 <td>TAIL</td>
 <td>ARROW</td>
 <td>False</td>
 <td>False</td>
-<td>dd;nl</td>
-<td>1.000000</td>
+<td>dd;pl</td>
+<td>0.545455</td>
+<td>0.454545</td>
 </tr>
 <tr>
-<th>2</th>
-<td>silence</td>
-<td>silence2</td>
+<th>40</th>
+<td>b_173733</td>
+<td>nv-b_102939</td>
 <td>TAIL</td>
 <td>ARROW</td>
 <td>False</td>
 <td>False</td>
-<td>dd;nl</td>
-<td>0.941176</td>
-</tr>
-<tr>
-<th>3</th>
-<td>mail_dev2</td>
-<td>churn</td>
-<td>TAIL</td>
-<td>ARROW</td>
-<td>False</td>
-<td>False</td>
-<td>dd;nl</td>
-<td>0.627451</td>
-</tr>
-<tr>
-<th>4</th>
-<td>start</td>
-<td>commit2</td>
-<td>TAIL</td>
-<td>ARROW</td>
-<td>False</td>
-<td>False</td>
-<td>dd;nl</td>
-<td>0.921569</td>
+<td>pd;pl</td>
+<td>0.727273</td>
+<td>0.272727</td>
 </tr>
 </tbody>
 </table>
 </div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=37da5df8">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p>Lastly, we can examine the counts of each type of edge formed on each subgraph via the edge_type_probabilities table. Since the edgeset table probability already sums the probabilities from this table for every node pair, this information is presented here only for qualitative inspection, but it is not currently used in the subsequent steps.</p>
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=cf5fd813">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [25]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-<div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="n">parsed_graph</span><span class="p">[</span><span class="s2">"edge_type_probabilities"</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell-outputWrapper">
-<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
-</div>
-<div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child jp-OutputArea-executeResult">
-<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[25]:</div>
-<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
-<div>
-<style scoped="">
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-<thead>
-<tr style="text-align: right;">
-<th></th>
-<th>node1_name</th>
-<th>node2_name</th>
-<th>edge_type</th>
-<th>properties</th>
-<th>probability</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<th>0</th>
-<td>start</td>
-<td>b_160705</td>
-<td>ta</td>
-<td>NaN</td>
-<td>0.509804</td>
-</tr>
-<tr>
-<th>1</th>
-<td>start</td>
-<td>b_160705</td>
-<td>nil</td>
-<td>NaN</td>
-<td>0.274510</td>
-</tr>
-<tr>
-<th>2</th>
-<td>start</td>
-<td>b_160705</td>
-<td>at</td>
-<td>NaN</td>
-<td>0.156863</td>
-</tr>
-<tr>
-<th>3</th>
-<td>start</td>
-<td>b_160705</td>
-<td>tt</td>
-<td>NaN</td>
-<td>0.058824</td>
-</tr>
-<tr>
-<th>4</th>
-<td>silence</td>
-<td>mail_dev</td>
-<td>ta</td>
-<td>dd;nl</td>
-<td>0.588235</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=60cf9cb5">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="Deriving-1-PNEF">Deriving 1 PNEF<a class="anchor-link" href="#Deriving-1-PNEF">¶</a></h3><p>As noted, our interest is to derive a threshold for the final causal search, using the information of this bootstrapped null feature causal search between the actual variables, and the random features. By this randome dge definition, our first step is to subset the <code>edgeset</code>table  to contain only the edge pairs that include null variables. A sample is shown below of the table where at least one of the two nodes is nv:</p>
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=74e4258d">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-<div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="n">nv_edges</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">filter_null_edges</span><span class="p">(</span><span class="n">parsed_graph</span><span class="p">[</span><span class="s2">"edgeset"</span><span class="p">])</span>
-<span class="n">nv_edges</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=84295370">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p>Next, we can derive a no_edge probability by subtracting 1 from the <code>probability</code> value.</p>
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=fc9a6c92">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-<div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="n">nv_edges</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">add_no_edge_probability</span><span class="p">(</span><span class="n">nv_edges</span><span class="p">)</span>
-<span class="n">nv_edges</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
-</pre></div>
 </div>
 </div>
 </div>
@@ -9140,11 +9162,14 @@ Converted nv_lag_dt and binarized_lag_dt to float.
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [636]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="n">pnef_1</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">pnef_threshold</span><span class="p">(</span><span class="n">nv_edges</span><span class="p">)</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">pnef_1</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">nv_edges</span><span class="p">[</span><span class="s2">"no_edge"</span><span class="p">]</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="mf">0.01</span><span class="p">))</span>
 <span class="n">pnef_1</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">py_output_dir</span><span class="p">,</span> <span class="s2">"pnef_1.txt"</span><span class="p">),</span> <span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">pnef_1</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -9168,11 +9193,11 @@ Converted nv_lag_dt and binarized_lag_dt to float.
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [29]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [637]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1">#knowledge_file_path = os.path.expanduser("~/Downloads/knowledge_2.txt")</span>
-<span class="n">knowledge_file_path</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"resources/mike_knowledge_box.txt"</span><span class="p">)</span>  
+<span class="n">knowledge_file_path</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"resources/knowledge_box.txt"</span><span class="p">)</span>  
 </pre></div>
 </div>
 </div>
@@ -9194,10 +9219,10 @@ Converted nv_lag_dt and binarized_lag_dt to float.
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [30]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [638]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="n">output_folder_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s2">"processed_data"</span><span class="p">)</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">output_folder_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s2">"domain_binarized_search"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -9215,12 +9240,12 @@ Converted nv_lag_dt and binarized_lag_dt to float.
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=24de78d2">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=24de78d2">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [639]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Set eval_fges_domain = True to run, False to skip</span>
@@ -9233,7 +9258,7 @@ Converted nv_lag_dt and binarized_lag_dt to float.
     <span class="n">state</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">load_continuous</span><span class="p">(</span><span class="n">binarized_lag_dt</span><span class="p">)</span>
     <span class="n">state</span><span class="p">[</span><span class="s2">"knowledge"</span><span class="p">]</span> <span class="o">=</span> <span class="n">knowledge</span><span class="o">.</span><span class="n">load_knowledge</span><span class="p">(</span><span class="n">knowledge_file_path</span><span class="p">)</span>
     <span class="n">sem_bic</span> <span class="o">=</span> <span class="n">score</span><span class="o">.</span><span class="n">use_sem_bic</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s2">"params"</span><span class="p">],</span> <span class="n">penalty_discount</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sem_bic_structure_prior</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sem_bic_rule</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">bootstrapping</span><span class="o">.</span><span class="n">set_bootstrapping</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s2">"params"</span><span class="p">],</span> <span class="n">number_resampling</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+    <span class="n">bootstrapping</span><span class="o">.</span><span class="n">set_bootstrapping</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s2">"params"</span><span class="p">],</span> <span class="n">number_resampling</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
                                     <span class="n">percent_resample_size</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
                                     <span class="n">add_original_dataset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">resampling_with_replacement</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                                     <span class="n">resampling_ensemble</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -9246,22 +9271,12 @@ Converted nv_lag_dt and binarized_lag_dt to float.
     <span class="n">fges_domain_graph_json</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">get_json</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">"graph"</span><span class="p">])</span>
     <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_folder_path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">fges_domain_graph_json</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">convert_to_tetrad_gui_format</span><span class="p">(</span><span class="n">fges_domain_graph_json</span><span class="p">))</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"FGES domain search graph saved to: </span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">eval_fges_domain</span><span class="p">:</span>
+    <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">py_output_dir</span><span class="p">,</span> <span class="s2">"domain_search_graph.json"</span><span class="p">))</span>
 </pre></div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell-outputWrapper">
-<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
-</div>
-<div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>FGES domain search graph saved to: c:\Users\phuon\OneDrive\Documents\GitHub\pykumu\vignettes\processed_data\fges_bootstrap_binarized_search_500_runs_binary_indicators_graph.json
-</pre>
 </div>
 </div>
 </div>
@@ -9277,7 +9292,7 @@ Converted nv_lag_dt and binarized_lag_dt to float.
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=1d2bd489">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=1d2bd489">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -9295,22 +9310,67 @@ Converted nv_lag_dt and binarized_lag_dt to float.
     <span class="n">state</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">load_continuous</span><span class="p">(</span><span class="n">binarized_lag_dt</span><span class="p">)</span>
     <span class="n">state</span><span class="p">[</span><span class="s2">"knowledge"</span><span class="p">]</span> <span class="o">=</span> <span class="n">knowledge</span><span class="o">.</span><span class="n">load_knowledge</span><span class="p">(</span><span class="n">knowledge_file_path</span><span class="p">)</span>
     <span class="n">sem_bic</span> <span class="o">=</span> <span class="n">score</span><span class="o">.</span><span class="n">use_sem_bic</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s2">"params"</span><span class="p">],</span> <span class="n">penalty_discount</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sem_bic_structure_prior</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sem_bic_rule</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">bootstrapping</span><span class="o">.</span><span class="n">set_bootstrapping</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s2">"params"</span><span class="p">],</span> <span class="n">number_resampling</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+    <span class="n">bootstrapping</span><span class="o">.</span><span class="n">set_bootstrapping</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s2">"params"</span><span class="p">],</span> <span class="n">number_resampling</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
                                     <span class="n">percent_resample_size</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
                                     <span class="n">add_original_dataset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">resampling_with_replacement</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                                     <span class="n">resampling_ensemble</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="n">result</span> <span class="o">=</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">run_boss</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s2">"data"</span><span class="p">],</span> <span class="n">state</span><span class="p">[</span><span class="s2">"params"</span><span class="p">],</span> <span class="n">sem_bic</span><span class="p">,</span> <span class="n">state</span><span class="p">[</span><span class="s2">"knowledge"</span><span class="p">],</span>
                                 <span class="n">num_starts</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">use_bes</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">time_lag</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                                <span class="n">use_data_order</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                                <span class="n">use_data_order</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">num_threads</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 
     <span class="c1"># Save graph as JSON</span>
     <span class="n">boss_domain_graph_json</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">get_json</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">"graph"</span><span class="p">])</span>
     <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_folder_path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">boss_domain_graph_json</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">convert_to_tetrad_gui_format</span><span class="p">(</span><span class="n">boss_domain_graph_json</span><span class="p">))</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"BOSS domain search graph saved to: </span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">eval_boss_domain</span><span class="p">:</span>
+    <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">py_output_dir</span><span class="p">,</span> <span class="s2">"domain_search_graph.json"</span><span class="p">))</span>
 </pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>
+Loading knowledge.
+Adding to tier 1 start
+Adding to tier 1 mis_link
+Adding to tier 1 silence
+Adding to tier 1 code_dev
+Adding to tier 1 file
+Adding to tier 1 mail_dev
+Adding to tier 1 thread
+Adding to tier 1 commit
+Adding to tier 1 churn
+Adding to tier 2 mis_link2
+Adding to tier 2 silence2
+Adding to tier 2 code_dev2
+Adding to tier 2 file2
+Adding to tier 2 mail_dev2
+Adding to tier 2 thread2
+Adding to tier 2 commit2
+Adding to tier 2 churn2
+Bootstrap count = 1
+Bootstrap count = 2
+Bootstrap count = 3
+Bootstrap count = 4
+Bootstrap count = 5
+Bootstrap count = 6
+Bootstrap count = 7
+Bootstrap count = 8
+Bootstrap count = 9
+Bootstrap count = 10
+BOSS domain search graph saved to: /Users/phuonghuupham/pykumu/notebook/domain_binarized_search/boss_bootstrap_binarized_search_1000_runs_binary_indicators_graph.json
+</pre>
 </div>
 </div>
 </div>
@@ -9326,12 +9386,12 @@ Converted nv_lag_dt and binarized_lag_dt to float.
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=46fb9a44">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=46fb9a44">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [641]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">parsed_graph</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">parse_graph</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
@@ -9341,7 +9401,53 @@ Converted nv_lag_dt and binarized_lag_dt to float.
 <span class="nb">print</span><span class="p">(</span><span class="n">parsed_graph</span><span class="p">[</span><span class="s2">"edgeset"</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Edge Type Probabilities:"</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">parsed_graph</span><span class="p">[</span><span class="s2">"edge_type_probabilities"</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+
+<span class="n">parsed_graph</span><span class="p">[</span><span class="s2">"nodes"</span><span class="p">]</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">py_output_dir</span><span class="p">,</span> <span class="s2">"final_search_nodes.csv"</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">parsed_graph</span><span class="p">[</span><span class="s2">"edgeset"</span><span class="p">]</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">py_output_dir</span><span class="p">,</span> <span class="s2">"final_search_edgeset.csv"</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">parsed_graph</span><span class="p">[</span><span class="s2">"edge_type_probabilities"</span><span class="p">]</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">py_output_dir</span><span class="p">,</span> <span class="s2">"final_search_edge_type_probabilities.csv"</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>Nodes:
+  node_name
+0  b_100433
+1  b_100740
+2  b_100742
+3  b_102939
+4  b_103864
+
+Edgeset:
+  node1_name node2_name endpoint1 endpoint2   bold  highlighted properties  \
+0      start   b_160705      TAIL     ARROW  False        False        NaN   
+1   mail_dev    silence      TAIL     ARROW  False        False      dd;pl   
+2     commit  code_dev2      TAIL     ARROW  False        False      dd;nl   
+3    silence   silence2      TAIL     ARROW  False        False      dd;nl   
+4      start    commit2      TAIL     ARROW  False        False      dd;nl   
+
+   probability  
+0     0.727273  
+1     1.000000  
+2     1.000000  
+3     1.000000  
+4     1.000000  
+
+Edge Type Probabilities:
+  node1_name node2_name edge_type properties  probability
+0      start   b_160705        ta        NaN     0.545455
+1      start   b_160705       nil        NaN     0.272727
+2      start   b_160705        at        NaN     0.181818
+3   mail_dev    silence        ta      dd;pl     0.636364
+4   mail_dev    silence        at      dd;pl     0.363636
+</pre>
 </div>
 </div>
 </div>
@@ -9362,11 +9468,15 @@ Converted nv_lag_dt and binarized_lag_dt to float.
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [642]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="n">edges_1pnef</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">apply_pnef</span><span class="p">(</span><span class="n">parsed_graph</span><span class="p">[</span><span class="s2">"edgeset"</span><span class="p">],</span> <span class="n">pnef_1</span><span class="p">)</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">edges</span> <span class="o">=</span> <span class="n">parsed_graph</span><span class="p">[</span><span class="s2">"edgeset"</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">edges</span><span class="p">[</span><span class="s2">"no_edge"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">edges</span><span class="p">[</span><span class="s2">"probability"</span><span class="p">]</span>
+<span class="n">edges_1pnef</span> <span class="o">=</span> <span class="n">edges</span><span class="p">[</span><span class="n">edges</span><span class="p">[</span><span class="s2">"no_edge"</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">pnef_1</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 <span class="n">edges_1pnef</span>
+
+<span class="n">edges_1pnef</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">py_output_dir</span><span class="p">,</span> <span class="s2">"edges_1pnef.csv"</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -9388,10 +9498,56 @@ Converted nv_lag_dt and binarized_lag_dt to float.
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [643]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span> 
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># colorBlindness::Blue2DarkRed12Steps (verified from R/palette.R in jianhong/colorBlindness)</span>
+<span class="n">Blue2DarkRed12Steps</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">"#290AD8"</span><span class="p">,</span> <span class="s2">"#264DFF"</span><span class="p">,</span> <span class="s2">"#3FA0FF"</span><span class="p">,</span> <span class="s2">"#72D9FF"</span><span class="p">,</span> <span class="s2">"#AAF7FF"</span><span class="p">,</span> <span class="s2">"#E0FFFF"</span><span class="p">,</span>
+    <span class="s2">"#FFFFBF"</span><span class="p">,</span> <span class="s2">"#FFE099"</span><span class="p">,</span> <span class="s2">"#FFAD72"</span><span class="p">,</span> <span class="s2">"#F76D5E"</span><span class="p">,</span> <span class="s2">"#D82632"</span><span class="p">,</span> <span class="s2">"#A50021"</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<span class="c1"># Reference: https://stackoverflow.com/a/55094319/1260232</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_cycles</span><span class="p">(</span><span class="n">g</span><span class="p">):</span>
+    <span class="n">cycles</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">v1</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">g</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"in"</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">for</span> <span class="n">v2</span> <span class="ow">in</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"out"</span><span class="p">)</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="n">v1</span><span class="o">.</span><span class="n">index</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">get_all_simple_paths</span><span class="p">(</span><span class="n">v2</span><span class="p">,</span> <span class="n">v1</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"out"</span><span class="p">):</span>
+                <span class="n">full</span> <span class="o">=</span> <span class="p">[</span><span class="n">v1</span><span class="o">.</span><span class="n">index</span><span class="p">]</span> <span class="o">+</span> <span class="n">path</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">full</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span> <span class="ow">and</span> <span class="nb">min</span><span class="p">(</span><span class="n">full</span><span class="p">)</span> <span class="o">==</span> <span class="n">full</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                    <span class="n">cycles</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">"name"</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">full</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">cycles</span>
+
+
+<span class="c1"># Python equivalent of R's visIgraph(g, randomSeed=1) %&gt;% visOptions %&gt;% visInteraction.</span>
+<span class="c1"># Layout via python-igraph FR (same C library as R), render via pyvis (vis.js wrapper).</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">vis_igraph</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">nodes</span><span class="p">[</span><span class="s1">'node'</span><span class="p">])</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">names</span><span class="p">)}</span>
+    <span class="n">pairs</span> <span class="o">=</span> <span class="p">[(</span><span class="n">idx</span><span class="p">[</span><span class="n">f</span><span class="p">],</span> <span class="n">idx</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="k">for</span> <span class="n">f</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">edges</span><span class="p">[</span><span class="s1">'from'</span><span class="p">],</span> <span class="n">edges</span><span class="p">[</span><span class="s1">'to'</span><span class="p">])</span> <span class="k">if</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">idx</span> <span class="ow">and</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">idx</span><span class="p">]</span>
+
+    <span class="n">g</span> <span class="o">=</span> <span class="n">ig</span><span class="o">.</span><span class="n">Graph</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">),</span> <span class="n">edges</span><span class="o">=</span><span class="n">pairs</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">);</span> <span class="n">ig</span><span class="o">.</span><span class="n">set_random_number_generator</span><span class="p">(</span><span class="n">random</span><span class="p">)</span>
+    <span class="n">coords</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">layout_fruchterman_reingold</span><span class="p">(</span><span class="n">niter</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span><span class="o">.</span><span class="n">coords</span>
+    <span class="n">pos</span> <span class="o">=</span> <span class="p">{</span><span class="n">names</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span> <span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="mi">200</span><span class="p">,</span> <span class="o">-</span><span class="n">y</span> <span class="o">*</span> <span class="mi">200</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">coords</span><span class="p">)}</span>
+
+    <span class="n">net</span> <span class="o">=</span> <span class="n">Network</span><span class="p">(</span><span class="n">height</span><span class="o">=</span><span class="s2">"700px"</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s2">"100%"</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">notebook</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cdn_resources</span><span class="o">=</span><span class="s1">'in_line'</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">nodes</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">pos</span><span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="s1">'node'</span><span class="p">]]</span>
+        <span class="n">net</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s1">'node'</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">r</span><span class="p">[</span><span class="s1">'node'</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">r</span><span class="p">[</span><span class="s1">'color'</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="n">r</span><span class="p">[</span><span class="s1">'node'</span><span class="p">],</span>
+                     <span class="n">size</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">physics</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">f</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">weight</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">edges</span><span class="p">[</span><span class="s1">'from'</span><span class="p">],</span> <span class="n">edges</span><span class="p">[</span><span class="s1">'to'</span><span class="p">],</span> <span class="n">edges</span><span class="p">[</span><span class="s1">'color'</span><span class="p">],</span> <span class="n">edges</span><span class="p">[</span><span class="s1">'weight'</span><span class="p">]):</span>
+        <span class="n">net</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">"p=</span><span class="si">{</span><span class="n">weight</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">arrows</span><span class="o">=</span><span class="s1">'to'</span><span class="p">)</span>
+    <span class="n">net</span><span class="o">.</span><span class="n">set_options</span><span class="p">(</span><span class="s1">'{"physics": {"enabled": false}, '</span>
+                    <span class="s1">'"interaction": {"navigationButtons": true, "keyboard": true, "hover": true}, '</span>
+                    <span class="s1">'"edges": {"smooth": false, "arrowStrikethrough": false}}'</span><span class="p">)</span>
+
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">"."</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">net</span><span class="o">.</span><span class="n">save_graph</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
+    <span class="n">net</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -9408,16 +9564,47 @@ Converted nv_lag_dt and binarized_lag_dt to float.
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=9136fc50">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=9136fc50">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [644]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span> 
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">nodes</span> <span class="o">=</span> <span class="n">parsed_graph</span><span class="p">[</span><span class="s1">'nodes'</span><span class="p">]</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">'node_name'</span><span class="p">:</span> <span class="s1">'node'</span><span class="p">})</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+<span class="n">edges</span> <span class="o">=</span> <span class="n">edges_1pnef</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">edges</span><span class="p">[</span><span class="s1">'color'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'black'</span>
+<span class="n">edges</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">edges</span><span class="p">[</span><span class="s1">'endpoint1'</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'TAIL'</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">edges</span><span class="p">[</span><span class="s1">'endpoint2'</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'TAIL'</span><span class="p">),</span> <span class="s1">'color'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'red'</span>
+<span class="n">edges</span> <span class="o">=</span> <span class="n">edges</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">'node1_name'</span><span class="p">:</span> <span class="s1">'from'</span><span class="p">,</span> <span class="s1">'node2_name'</span><span class="p">:</span> <span class="s1">'to'</span><span class="p">})</span>
+<span class="n">edges</span><span class="p">[</span><span class="s1">'weight'</span><span class="p">]</span> <span class="o">=</span> <span class="n">edges</span><span class="p">[</span><span class="s1">'probability'</span><span class="p">]</span>
+<span class="n">edges</span> <span class="o">=</span> <span class="n">edges</span><span class="p">[[</span><span class="s1">'from'</span><span class="p">,</span> <span class="s1">'to'</span><span class="p">,</span> <span class="s1">'color'</span><span class="p">,</span> <span class="s1">'weight'</span><span class="p">]]</span>
+
+<span class="n">nodes_n</span> <span class="o">=</span> <span class="n">nodes</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">nodes_n</span><span class="p">[</span><span class="s1">'color'</span><span class="p">]</span> <span class="o">=</span> <span class="n">Blue2DarkRed12Steps</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">nodes_n</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">nodes_n</span><span class="p">[</span><span class="s1">'node'</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="s1">'silence'</span><span class="p">,</span>  <span class="s1">'silence2'</span><span class="p">]),</span>  <span class="s1">'color'</span><span class="p">]</span> <span class="o">=</span> <span class="n">Blue2DarkRed12Steps</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+<span class="n">nodes_n</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">nodes_n</span><span class="p">[</span><span class="s1">'node'</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="s1">'mis_link'</span><span class="p">,</span> <span class="s1">'mis_link2'</span><span class="p">]),</span> <span class="s1">'color'</span><span class="p">]</span> <span class="o">=</span> <span class="n">Blue2DarkRed12Steps</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">nodes_n</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">nodes_n</span><span class="p">[</span><span class="s1">'node'</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="s1">'code_dev'</span><span class="p">,</span> <span class="s1">'code_dev2'</span><span class="p">]),</span> <span class="s1">'color'</span><span class="p">]</span> <span class="o">=</span> <span class="n">Blue2DarkRed12Steps</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span>
+<span class="n">nodes_n</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">nodes_n</span><span class="p">[</span><span class="s1">'node'</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="s1">'churn'</span><span class="p">,</span>    <span class="s1">'churn2'</span><span class="p">]),</span>    <span class="s1">'color'</span><span class="p">]</span> <span class="o">=</span> <span class="n">Blue2DarkRed12Steps</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span>
+<span class="n">nodes_n</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">nodes_n</span><span class="p">[</span><span class="s1">'node'</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="s1">'commit'</span><span class="p">,</span>   <span class="s1">'commit2'</span><span class="p">]),</span>   <span class="s1">'color'</span><span class="p">]</span> <span class="o">=</span> <span class="n">Blue2DarkRed12Steps</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span>
+<span class="n">nodes_n</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">nodes_n</span><span class="p">[</span><span class="s1">'node'</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s1">'b_'</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span> <span class="s1">'color'</span><span class="p">]</span> <span class="o">=</span> <span class="n">Blue2DarkRed12Steps</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">vis_igraph</span><span class="p">(</span><span class="n">nodes_n</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="s2">"causal_graph/causal_graph_full.html"</span><span class="p">)</span>
 </pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>causal_graph/causal_graph_full.html
+</pre>
 </div>
 </div>
 </div>
@@ -9433,16 +9620,76 @@ Converted nv_lag_dt and binarized_lag_dt to float.
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=132ad984">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=132ad984">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [645]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span> 
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">nodes_of_interest</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"silence"</span><span class="p">,</span> <span class="s2">"silence2"</span><span class="p">,</span> <span class="s2">"mis_link"</span><span class="p">,</span> <span class="s2">"mis_link2"</span><span class="p">,</span>
+                     <span class="s2">"code_dev"</span><span class="p">,</span> <span class="s2">"code_dev2"</span><span class="p">,</span> <span class="s2">"churn"</span><span class="p">,</span> <span class="s2">"churn2"</span><span class="p">,</span>
+                     <span class="s2">"commit"</span><span class="p">,</span> <span class="s2">"commit2"</span><span class="p">]</span>
+<span class="n">edges_n</span> <span class="o">=</span> <span class="n">edges</span><span class="p">[</span><span class="n">edges</span><span class="p">[</span><span class="s1">'from'</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">nodes_of_interest</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">edges</span><span class="p">[</span><span class="s1">'to'</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">nodes_of_interest</span><span class="p">)]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">nodes_n</span> <span class="o">=</span> <span class="n">nodes</span><span class="p">[</span><span class="n">nodes</span><span class="p">[</span><span class="s1">'node'</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">edges_n</span><span class="p">[</span><span class="s1">'from'</span><span class="p">])</span> <span class="o">|</span> <span class="nb">set</span><span class="p">(</span><span class="n">edges_n</span><span class="p">[</span><span class="s1">'to'</span><span class="p">]))]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+<span class="n">nodes_n</span><span class="p">[</span><span class="s1">'color'</span><span class="p">]</span> <span class="o">=</span> <span class="n">Blue2DarkRed12Steps</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">nodes_n</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">nodes_n</span><span class="p">[</span><span class="s1">'node'</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="s1">'silence'</span><span class="p">,</span>  <span class="s1">'silence2'</span><span class="p">]),</span>  <span class="s1">'color'</span><span class="p">]</span> <span class="o">=</span> <span class="n">Blue2DarkRed12Steps</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+<span class="n">nodes_n</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">nodes_n</span><span class="p">[</span><span class="s1">'node'</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="s1">'mis_link'</span><span class="p">,</span> <span class="s1">'mis_link2'</span><span class="p">]),</span> <span class="s1">'color'</span><span class="p">]</span> <span class="o">=</span> <span class="n">Blue2DarkRed12Steps</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">nodes_n</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">nodes_n</span><span class="p">[</span><span class="s1">'node'</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="s1">'code_dev'</span><span class="p">,</span> <span class="s1">'code_dev2'</span><span class="p">]),</span> <span class="s1">'color'</span><span class="p">]</span> <span class="o">=</span> <span class="n">Blue2DarkRed12Steps</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span>
+<span class="n">nodes_n</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">nodes_n</span><span class="p">[</span><span class="s1">'node'</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="s1">'churn'</span><span class="p">,</span>    <span class="s1">'churn2'</span><span class="p">]),</span>    <span class="s1">'color'</span><span class="p">]</span> <span class="o">=</span> <span class="n">Blue2DarkRed12Steps</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span>
+<span class="n">nodes_n</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">nodes_n</span><span class="p">[</span><span class="s1">'node'</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="s1">'commit'</span><span class="p">,</span>   <span class="s1">'commit2'</span><span class="p">]),</span>   <span class="s1">'color'</span><span class="p">]</span> <span class="o">=</span> <span class="n">Blue2DarkRed12Steps</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span>
+
+<span class="n">vis_igraph</span><span class="p">(</span><span class="n">nodes_n</span><span class="p">,</span> <span class="n">edges_n</span><span class="p">,</span> <span class="s2">"causal_graph/causal_graph_subgraph.html"</span><span class="p">)</span>
 </pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>causal_graph/causal_graph_subgraph.html
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=cycle_detection_01">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [646]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">names</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">edges</span><span class="p">[</span><span class="s1">'from'</span><span class="p">])</span> <span class="o">|</span> <span class="nb">set</span><span class="p">(</span><span class="n">edges</span><span class="p">[</span><span class="s1">'to'</span><span class="p">]))</span>
+<span class="n">idx</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">names</span><span class="p">)}</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">ig</span><span class="o">.</span><span class="n">Graph</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">),</span>
+             <span class="n">edges</span><span class="o">=</span><span class="p">[(</span><span class="n">idx</span><span class="p">[</span><span class="n">f</span><span class="p">],</span> <span class="n">idx</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="k">for</span> <span class="n">f</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">edges</span><span class="p">[</span><span class="s1">'from'</span><span class="p">],</span> <span class="n">edges</span><span class="p">[</span><span class="s1">'to'</span><span class="p">])],</span>
+             <span class="n">directed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]</span> <span class="o">=</span> <span class="n">names</span>
+
+<span class="n">find_cycles</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[646]:</div>
+<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
+<pre>[['commit', 'mis_link', 'mail_dev', 'thread', 'commit'],
+ ['mail_dev', 'thread', 'mis_link', 'mail_dev']]</pre>
 </div>
 </div>
 </div>

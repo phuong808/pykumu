@@ -71,24 +71,20 @@ Tetrad-compatible data objects and initialize search state.</p>
 </span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a><span class="sd">Tetrad-compatible data objects and initialize search state.</span>
 </span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a>
-</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a><span class="k">try</span><span class="p">:</span>
-</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a>    <span class="kn">import</span><span class="w"> </span><span class="nn">api.translate</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tr</span>
-</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a>    <span class="kn">import</span><span class="w"> </span><span class="nn">edu.cmu.tetrad.data</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">td</span>
-</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a>    <span class="kn">from</span><span class="w"> </span><span class="nn">edu.cmu.tetrad.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameters</span>
-</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a><span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a>    <span class="k">pass</span>
-</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a>
-</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a>
-</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a><span class="k">def</span><span class="w"> </span><span class="nf">load_continuous</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
-</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a pandas DataFrame to Tetrad data format and initialize search state.</span>
-</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a>
-</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a><span class="sd">    :param df: pandas DataFrame with all columns as float (continuous)</span>
-</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a><span class="sd">    :returns: dict with &#39;data&#39;, &#39;params&#39;, &#39;knowledge&#39; keys</span>
-</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a>    <span class="n">data</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">pandas_data_to_tetrad</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-</span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a>    <span class="n">params</span> <span class="o">=</span> <span class="n">Parameters</span><span class="p">()</span>
-</span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a>    <span class="n">knowledge</span> <span class="o">=</span> <span class="n">td</span><span class="o">.</span><span class="n">Knowledge</span><span class="p">()</span>
-</span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a>    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="n">params</span><span class="p">,</span> <span class="s2">&quot;knowledge&quot;</span><span class="p">:</span> <span class="n">knowledge</span><span class="p">}</span>
+</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a><span class="k">def</span><span class="w"> </span><span class="nf">load_continuous</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a pandas DataFrame to Tetrad data format and initialize search state.</span>
+</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a>
+</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a><span class="sd">    :param df: pandas DataFrame with all columns as float (continuous)</span>
+</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a><span class="sd">    :returns: dict with &#39;data&#39;, &#39;params&#39;, &#39;knowledge&#39; keys</span>
+</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a>    <span class="kn">import</span><span class="w"> </span><span class="nn">api.translate</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tr</span>
+</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a>    <span class="kn">import</span><span class="w"> </span><span class="nn">edu.cmu.tetrad.data</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">td</span>
+</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a>    <span class="kn">from</span><span class="w"> </span><span class="nn">edu.cmu.tetrad.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameters</span>
+</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a>
+</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a>    <span class="n">data</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">pandas_data_to_tetrad</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a>    <span class="n">params</span> <span class="o">=</span> <span class="n">Parameters</span><span class="p">()</span>
+</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a>    <span class="n">knowledge</span> <span class="o">=</span> <span class="n">td</span><span class="o">.</span><span class="n">Knowledge</span><span class="p">()</span>
+</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a>    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="n">params</span><span class="p">,</span> <span class="s2">&quot;knowledge&quot;</span><span class="p">:</span> <span class="n">knowledge</span><span class="p">}</span>
 </span></pre></div>
 
 
@@ -104,16 +100,20 @@ Tetrad-compatible data objects and initialize search state.</p>
 
     </div>
     <a class="headerlink" href="#load_continuous"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="load_continuous-22"><a href="#load_continuous-22"><span class="linenos">22</span></a><span class="k">def</span><span class="w"> </span><span class="nf">load_continuous</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
-</span><span id="load_continuous-23"><a href="#load_continuous-23"><span class="linenos">23</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a pandas DataFrame to Tetrad data format and initialize search state.</span>
-</span><span id="load_continuous-24"><a href="#load_continuous-24"><span class="linenos">24</span></a>
-</span><span id="load_continuous-25"><a href="#load_continuous-25"><span class="linenos">25</span></a><span class="sd">    :param df: pandas DataFrame with all columns as float (continuous)</span>
-</span><span id="load_continuous-26"><a href="#load_continuous-26"><span class="linenos">26</span></a><span class="sd">    :returns: dict with &#39;data&#39;, &#39;params&#39;, &#39;knowledge&#39; keys</span>
-</span><span id="load_continuous-27"><a href="#load_continuous-27"><span class="linenos">27</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="load_continuous-28"><a href="#load_continuous-28"><span class="linenos">28</span></a>    <span class="n">data</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">pandas_data_to_tetrad</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-</span><span id="load_continuous-29"><a href="#load_continuous-29"><span class="linenos">29</span></a>    <span class="n">params</span> <span class="o">=</span> <span class="n">Parameters</span><span class="p">()</span>
-</span><span id="load_continuous-30"><a href="#load_continuous-30"><span class="linenos">30</span></a>    <span class="n">knowledge</span> <span class="o">=</span> <span class="n">td</span><span class="o">.</span><span class="n">Knowledge</span><span class="p">()</span>
-</span><span id="load_continuous-31"><a href="#load_continuous-31"><span class="linenos">31</span></a>    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="n">params</span><span class="p">,</span> <span class="s2">&quot;knowledge&quot;</span><span class="p">:</span> <span class="n">knowledge</span><span class="p">}</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="load_continuous-14"><a href="#load_continuous-14"><span class="linenos">14</span></a><span class="k">def</span><span class="w"> </span><span class="nf">load_continuous</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+</span><span id="load_continuous-15"><a href="#load_continuous-15"><span class="linenos">15</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a pandas DataFrame to Tetrad data format and initialize search state.</span>
+</span><span id="load_continuous-16"><a href="#load_continuous-16"><span class="linenos">16</span></a>
+</span><span id="load_continuous-17"><a href="#load_continuous-17"><span class="linenos">17</span></a><span class="sd">    :param df: pandas DataFrame with all columns as float (continuous)</span>
+</span><span id="load_continuous-18"><a href="#load_continuous-18"><span class="linenos">18</span></a><span class="sd">    :returns: dict with &#39;data&#39;, &#39;params&#39;, &#39;knowledge&#39; keys</span>
+</span><span id="load_continuous-19"><a href="#load_continuous-19"><span class="linenos">19</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="load_continuous-20"><a href="#load_continuous-20"><span class="linenos">20</span></a>    <span class="kn">import</span><span class="w"> </span><span class="nn">api.translate</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tr</span>
+</span><span id="load_continuous-21"><a href="#load_continuous-21"><span class="linenos">21</span></a>    <span class="kn">import</span><span class="w"> </span><span class="nn">edu.cmu.tetrad.data</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">td</span>
+</span><span id="load_continuous-22"><a href="#load_continuous-22"><span class="linenos">22</span></a>    <span class="kn">from</span><span class="w"> </span><span class="nn">edu.cmu.tetrad.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameters</span>
+</span><span id="load_continuous-23"><a href="#load_continuous-23"><span class="linenos">23</span></a>
+</span><span id="load_continuous-24"><a href="#load_continuous-24"><span class="linenos">24</span></a>    <span class="n">data</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">pandas_data_to_tetrad</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+</span><span id="load_continuous-25"><a href="#load_continuous-25"><span class="linenos">25</span></a>    <span class="n">params</span> <span class="o">=</span> <span class="n">Parameters</span><span class="p">()</span>
+</span><span id="load_continuous-26"><a href="#load_continuous-26"><span class="linenos">26</span></a>    <span class="n">knowledge</span> <span class="o">=</span> <span class="n">td</span><span class="o">.</span><span class="n">Knowledge</span><span class="p">()</span>
+</span><span id="load_continuous-27"><a href="#load_continuous-27"><span class="linenos">27</span></a>    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="n">params</span><span class="p">,</span> <span class="s2">&quot;knowledge&quot;</span><span class="p">:</span> <span class="n">knowledge</span><span class="p">}</span>
 </span></pre></div>
 
 

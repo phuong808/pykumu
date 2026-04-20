@@ -10,20 +10,16 @@ This module provides functions to convert pandas DataFrames into
 Tetrad-compatible data objects and initialize search state.
 """
 
-try:
-    import pykumu.translate as tr
-    import edu.cmu.tetrad.data as td
-    from edu.cmu.tetrad.util import Parameters
-except ImportError:
-    pass
-
-
 def load_continuous(df):
     """Convert a pandas DataFrame to Tetrad data format and initialize search state.
 
     :param df: pandas DataFrame with all columns as float (continuous)
     :returns: dict with 'data', 'params', 'knowledge' keys
     """
+    import api.translate as tr
+    import edu.cmu.tetrad.data as td
+    from edu.cmu.tetrad.util import Parameters
+
     data = tr.pandas_data_to_tetrad(df)
     params = Parameters()
     knowledge = td.Knowledge()

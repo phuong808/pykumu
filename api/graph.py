@@ -14,19 +14,71 @@ files into tabular DataFrames.
 import json
 
 import pandas as pd
-try:
-    import edu.cmu.tetrad.graph.GraphSaveLoadUtils as gp
-except ImportError:
-    pass
-
-
 def get_json(graph):
     """Convert a Tetrad graph object to a JSON string.
 
     :param graph: Tetrad Java graph object (e.g., from algorithm.run_fges()['graph'])
     :returns: JSON string representation of the graph
     """
+    import edu.cmu.tetrad.graph.GraphSaveLoadUtils as gp
+
     return str(gp.graphToJson(graph))
+
+
+def convert_to_tetrad_gui_format(graph_json_str):
+    """Convert a PyKumu/newer Tetrad JSON graph string to the format Tetrad GUI can load.
+
+    The newer Tetrad library serializes nodeType as a string (e.g., "MEASURED"),
+    while Tetrad GUI and causal-cmd expect it as an object (e.g., {"ordinal": 0}).
+    This function converts between the two formats.
+
+    :param graph_json_str: JSON string or file path to a graph JSON
+    :returns: JSON string in Tetrad GUI-compatible format
+    """
+    NODE_TYPE_MAP = {
+        "MEASURED": {"ordinal": 0},
+        "LATENT": {"ordinal": 1},
+        "ERROR": {"ordinal": 2},
+    }
+
+    if graph_json_str.endswith('.json'):
+        with open(graph_json_str, 'r') as f:
+            graph = json.load(f)
+    else:
+        graph = json.loads(graph_json_str)
+
+    # Convert nodeType in all nodes
+    def convert_node(node):
+        if isinstance(node.get("nodeType"), str):
+            node["nodeType"] = NODE_TYPE_MAP.get(node["nodeType"], {"ordinal": 0})
+        # Remove extra fields Tetrad GUI doesn't expect
+        node.pop("rank", None)
+        node.pop("selectionBias", None)
+        return node
+
+    for node in graph.get("nodes", []):
+        convert_node(node)
+
+    # Convert nodes inside namesHash
+    for name, node in graph.get("namesHash", {}).items():
+        convert_node(node)
+
+    # Convert nodes inside edges
+    for edge in graph.get("edgesSet", []):
+        convert_node(edge.get("node1", {}))
+        convert_node(edge.get("node2", {}))
+
+    # Convert nodes inside edgeLists
+    for name, edges in graph.get("edgeLists", {}).items():
+        for edge in edges:
+            convert_node(edge.get("node1", {}))
+            convert_node(edge.get("node2", {}))
+
+    # Remove extra top-level keys Tetrad GUI doesn't expect
+    for key in ["ancestorCache", "potentiallyDirectedPathCache", "ancillaryGraphs", "parentsHash"]:
+        graph.pop(key, None)
+
+    return json.dumps(graph, indent=2)
 
 
 def parse_graph(graph_filepath):
